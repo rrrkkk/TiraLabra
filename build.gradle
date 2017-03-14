@@ -1,0 +1,58 @@
+apply plugin: "c"
+apply plugin: 'cunit-test-suite'
+
+model {
+    flavors {
+        passing
+        failing
+    }
+    platforms {
+        x86 {
+            architecture "x86"
+        }
+    }
+    components {
+        operators(NativeLibrarySpec) {
+            targetPlatform "x86"
+        }
+    }
+    testSuites {
+        operatorsTest(CUnitTestSuiteSpec) {
+            testing $.components.operators
+        }
+    }
+}
+
+model {
+    toolChains {
+        visualCpp(VisualCpp) {
+            // Specify the installDir if Visual Studio cannot be located
+            // installDir "C:/Apps/Microsoft Visual Studio 10.0"
+        }
+        gcc(Gcc) {
+            // Uncomment to use a GCC install that is not in the PATH
+            path "/opt/local/bin"
+        }
+        clang(Clang)
+    }
+}
+
+model {
+    binaries {
+        all {
+            // Define a preprocessor macro for every binary
+            // cppCompiler.define "NDEBUG"
+
+            // Define toolchain-specific compiler and linker options
+            if (toolChain in Clang) {
+                cppCompiler.args "-I/opt/local/include", "-m64"
+                linker.args "-L/opt/local/lib", "-m64"
+            }
+            if (toolChain in VisualCpp) {
+                cppCompiler.args "/Zi"
+                linker.args "/DEBUG"
+            }
+        }
+    }
+}
+

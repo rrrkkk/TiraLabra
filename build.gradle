@@ -89,7 +89,7 @@ model {
         }
         gcc(Gcc) {
             // Uncomment to use a GCC install that is not in the PATH
-            path "/usr/local/bin"
+            path "/usr/local/bin", "/usr/bin"
         }
 //         clang(Clang) 
     }

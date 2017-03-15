@@ -2,23 +2,65 @@ apply plugin: "c"
 apply plugin: 'cunit-test-suite'
 
 model {
+    components {
+        rypto(NativeExecutableSpec) {
+	    sources {
+    	        c {
+        	    source {
+		        srcDir "src/source"
+            		include "**/*.c"
+        	    }
+        	    exportedHeaders {
+            	        srcDir "src/include"
+        	    }
+                }
+	    }
+//             sources {
+//                c.lib library: "hello"
+//             }
+        }
+    }
+}
+
+model {
     flavors {
         passing
         failing
     }
+    repositories {
+        libs(PrebuiltLibraries) {
+            cunit {
+                headers.srcDir "/usr/local/include"
+                binaries.withType(StaticLibraryBinary) {
+                    staticLibraryFile =
+                        file("/usr/local/lib/libcunit.a")
+			// +
+                        //      findCUnitLibForPlatform(targetPlatform))
+                }
+            }
+        }
+    }
     platforms {
-        x86 {
-            architecture "x86"
+        x86_64 {
+            architecture "x86_64"
         }
     }
     components {
         operators(NativeLibrarySpec) {
-            targetPlatform "x86"
+            targetPlatform "x86_64"
         }
     }
     testSuites {
-        operatorsTest(CUnitTestSuiteSpec) {
-            testing $.components.operators
+        ryptoTest(CUnitTestSuiteSpec) {
+            testing $.components.rypto
+	    sources {
+    	        c {
+        	    source {
+		        srcDir "src/ryptoTest/cunit"
+            		include "**/*.c"
+        	    }
+                }
+	    }
         }
     }
 }
@@ -31,9 +73,9 @@ model {
         }
         gcc(Gcc) {
             // Uncomment to use a GCC install that is not in the PATH
-            path "/opt/local/bin"
+            path "/usr/local/bin"
         }
-        clang(Clang)
+//         clang(Clang) 
     }
 }
 
@@ -44,9 +86,9 @@ model {
             // cppCompiler.define "NDEBUG"
 
             // Define toolchain-specific compiler and linker options
-            if (toolChain in Clang) {
-                cppCompiler.args "-I/opt/local/include", "-m64"
-                linker.args "-L/opt/local/lib", "-m64"
+            if (toolChain in Gcc) {
+                // cppCompiler.args "-I/usr/local/include"
+                // linker.args "-L/usr/local/lib"
             }
             if (toolChain in VisualCpp) {
                 cppCompiler.args "/Zi"
@@ -56,3 +98,14 @@ model {
     }
 }
 
+model {
+    binaries {
+        withType(CUnitTestSuiteBinarySpec) {
+            lib library: "cunit", linkage: "static"
+
+            if (flavor == flavors.failing) {
+                cCompiler.define "PLUS_BROKEN"
+            }
+        }
+    }
+}

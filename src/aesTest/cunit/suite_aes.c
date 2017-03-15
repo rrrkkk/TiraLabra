@@ -10,8 +10,11 @@ int suite_clean(void) {
     return 0;
 }
 
+void test_void(void) {
+  CU_ASSERT(0 == 0);
+}
+
 void gradle_cunit_register() {
-    CU_pSuite pSuiteMath = CU_add_suite("operator tests", suite_init, suite_clean);
-    CU_add_test(pSuiteMath, "test_plus", test_plus);
-    CU_add_test(pSuiteMath, "test_minus", test_minus);
+    CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
+    CU_add_test(pSuiteRypto, "test_void", test_void);
 }

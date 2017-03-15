@@ -3,6 +3,25 @@ apply plugin: 'cunit-test-suite'
 
 model {
     components {
+        aes(NativeLibrarySpec) {
+	    sources {
+    	        c {
+        	    source {
+		        srcDir "src/aes"
+            		include "**/*.c"
+        	    }
+        	    exportedHeaders {
+            	        srcDir "src/aes"
+            		include "**/*.h"
+        	    }
+                }
+	    }
+	}
+    }
+}
+
+model {
+    components {
         rypto(NativeExecutableSpec) {
 	    sources {
     	        c {
@@ -10,14 +29,11 @@ model {
 		        srcDir "src/source"
             		include "**/*.c"
         	    }
-        	    exportedHeaders {
-            	        srcDir "src/include"
-        	    }
                 }
 	    }
-//             sources {
-//                c.lib library: "hello"
-//             }
+            sources {
+               c.lib library: "aes"
+            }
         }
     }
 }
@@ -51,12 +67,12 @@ model {
         }
     }
     testSuites {
-        ryptoTest(CUnitTestSuiteSpec) {
-            testing $.components.rypto
+        aesTest(CUnitTestSuiteSpec) {
+            testing $.components.aes
 	    sources {
     	        c {
         	    source {
-		        srcDir "src/ryptoTest/cunit"
+		        srcDir "src/aesTest/cunit"
             		include "**/*.c"
         	    }
                 }

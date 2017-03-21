@@ -79,4 +79,5 @@ b6 ff 74 4e d2 c2 c9 bf 6c 59 0c bf 04 69 bf 41
 void gradle_cunit_register() {
     CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
     CU_add_test(pSuiteRypto, "test_void", test_void);
+    CU_add_test(pSuiteRypto, "test_makeword", test_makeword);
 }

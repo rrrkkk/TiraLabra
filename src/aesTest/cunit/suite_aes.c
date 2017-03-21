@@ -1,6 +1,6 @@
 #include <CUnit/Basic.h>
 #include "gradle_cunit_register.h"
-/* #include "test_operators.h" */
+#include "aes.h"
 
 int suite_init(void) {
     return 0;
@@ -22,6 +22,12 @@ void test_void(void) {
 
 void test_fail(void) {
   CU_ASSERT(1 == 0);
+}
+
+/* makeword test case: 0x01, 0x02, 0x03, 0x04 -> 0x01020304 */
+
+void test_makeword(void) {
+  CU_ASSERT(AES_makeword(0x01, 0x02, 0x03, 0x04) == 0x01020304);
 }
 
 /* KeySchedule test cases, from http://www.samiam.org/key-schedule.html

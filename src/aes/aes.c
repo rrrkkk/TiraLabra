@@ -33,15 +33,25 @@ void AES_KaBoom(char *curse) {
   exit(1);
 }
 
-/* Generate a key schedule from key (16 bytes) to w. Limited to 128-bit keys. */
+/* Help function to create one word from 4 bytes. */
 
-void AES_KeyExpansion(AES_byte *key, AES_word *w, int Nk) {
+AES_word AES_makeword(AES_byte b0, AES_byte b1, AES_byte b2, AES_byte b3) {
+  return (AES_word) b0 << 24 & (AES_word) b1 << 16 & (AES_word) b2 << 8 & (AES_word) b0; 
+}
+
+/* Generate a key schedule from key (16 bytes) to w.
+   Limited to 128-bit keys. => Nk, Nr are constant */
+
+void AES_KeyExpansion(AES_byte *key, AES_word *w) {
   AES_word temp;
   int i;
 
-  if (Nk != 4) {
+  if (AES_Nk != 4) {
     AES_KaBoom("AES_KeyExpansion: Nk != 4");
   }
 
-  XXX kesken;
+  for (i = 0; i < AES_Nk; i ++) {
+    w[i] = AES_makeword(key[4*i], key[4*i+1], key[4*i+2], key[4*i+3]);
+  }
+  
 }

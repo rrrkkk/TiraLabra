@@ -26,6 +26,15 @@ const AES_byte AES_S_Box[256] = {
   0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
+/* help var for KeySchedule. from standard pp. 27-
+   this is for 128 bit keys.
+ */
+
+AES_word AES_Rcon[10] = {
+  0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
+  0x20000000, 0x40000000, 0x80000000, 0x1b000000, 0x36000000
+};
+
 /* Unrecoverable error, bail out */
 
 void AES_KaBoom(char *curse) {
@@ -53,5 +62,16 @@ void AES_KeyExpansion(AES_byte *key, AES_word *w) {
   for (i = 0; i < AES_Nk; i ++) {
     w[i] = AES_makeword(key[4*i], key[4*i+1], key[4*i+2], key[4*i+3]);
   }
-  
+
+  for (i = AES_Nk; i < AES_Nb * (AES_Nr + 1); i ++) {
+    temp = w[i - 1];
+    if (i % AES_Nk == 0) {
+      temp = SubWord(RotWord(temp)) ^ AES_Rcon[i/Nk];
+    } else if (AES_Nk > 6 && i % AES_Nk == 4) {
+      temp = SubWord(temp);
+    } /* if */
+    w[i] = w[i-Nk] ^ temp;
+  }
+
+  return;
 }

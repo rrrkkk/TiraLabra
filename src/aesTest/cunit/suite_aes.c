@@ -27,5 +27,4 @@ void test_fail(void) {
 void gradle_cunit_register() {
     CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
     CU_add_test(pSuiteRypto, "test_void", test_void);
-    /* CU_add_test(pSuiteRypto, "test_fail", test_fail); */
 }

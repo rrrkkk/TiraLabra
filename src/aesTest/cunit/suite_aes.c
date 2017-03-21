@@ -30,7 +30,7 @@ void test_makeword(void) {
   CU_ASSERT(AES_makeword(0x01, 0x02, 0x03, 0x04) == 0x01020304);
 }
 
-/* KeySchedule test cases, from http://www.samiam.org/key-schedule.html
+/* KeySchedule test case, from the standard, pp. 27- XXX
 
     For the key 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00, the expanded key is:
 

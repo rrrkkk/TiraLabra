@@ -36,7 +36,7 @@ void AES_KaBoom(char *curse) {
 /* Help function to create one word from 4 bytes. */
 
 AES_word AES_makeword(AES_byte b0, AES_byte b1, AES_byte b2, AES_byte b3) {
-  return (AES_word) b0 << 24 & (AES_word) b1 << 16 & (AES_word) b2 << 8 & (AES_word) b0; 
+  return (AES_word) b0 << 24 | (AES_word) b1 << 16 | (AES_word) b2 << 8 | (AES_word) b3; 
 }
 
 /* Generate a key schedule from key (16 bytes) to w.

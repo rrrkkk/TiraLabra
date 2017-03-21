@@ -30,54 +30,119 @@ void test_makeword(void) {
   CU_ASSERT(AES_makeword(0x01, 0x02, 0x03, 0x04) == 0x01020304);
 }
 
-/* KeySchedule test case, from the standard, pp. 27- XXX
+/* KeyExpansion test cases, from the Internet */
 
-    For the key 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00, the expanded key is:
+#define N_W 44 /* size of expanded key, in words */
 
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-62 63 63 63 62 63 63 63 62 63 63 63 62 63 63 63 
-9b 98 98 c9 f9 fb fb aa 9b 98 98 c9 f9 fb fb aa 
-90 97 34 50 69 6c cf fa f2 f4 57 33 0b 0f ac 99 
-ee 06 da 7b 87 6a 15 81 75 9e 42 b2 7e 91 ee 2b 
-7f 2e 2b 88 f8 44 3e 09 8d da 7c bb f3 4b 92 90 
-ec 61 4b 85 14 25 75 8c 99 ff 09 37 6a b4 9b a7 
-21 75 17 87 35 50 62 0b ac af 6b 3c c6 1b f0 9b 
-0e f9 03 33 3b a9 61 38 97 06 0a 04 51 1d fa 9f 
-b1 d4 d8 e2 8a 7d b9 da 1d 7b b3 de 4c 66 49 41 
-b4 ef 5b cb 3e 92 e2 11 23 e9 51 cf 6f 8f 18 8e 
+void test_KeyExpansion_00(void) {
+  int i;
+  AES_byte key[] =
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+  AES_word actual_w[N_W];
+  AES_word expected_w[N_W] =
+    { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 
+      0x62636363, 0x62636363, 0x62636363, 0x62636363, 
+      0x9b9898c9, 0xf9fbfbaa, 0x9b9898c9, 0xf9fbfbaa, 
+      0x90973450, 0x696ccffa, 0xf2f45733, 0x0b0fac99, 
+      0xee06da7b, 0x876a1581, 0x759e42b2, 0x7e91ee2b, 
+      0x7f2e2b88, 0xf8443e09, 0x8dda7cbb, 0xf34b9290, 
+      0xec614b85, 0x1425758c, 0x99ff0937, 0x6ab49ba7, 
+      0x21751787, 0x3550620b, 0xacaf6b3c, 0xc61bf09b, 
+      0x0ef90333, 0x3ba96138, 0x97060a04, 0x511dfa9f, 
+      0xb1d4d8e2, 0x8a7db9da, 0x1d7bb3de, 0x4c664941, 
+      0xb4ef5bcb, 0x3e92e211, 0x23e951cf, 0x6f8f188e };
 
-For the key ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff, the expanded key is:
+  AES_KeyExpansion(key, actual_w);
+  for (i = 0; i < N_W; i ++)
+    if (actual_w[i] != expected_w[i]) {
+      printf("test_KeyExpansion_00 failed, i=%d, actual=%x, expected=%x\n",
+	       i, actual_w[i], expected_w[i]);
+      CU_FAIL("test_KeyExpansion_00 failed");
+    }
 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-e8 e9 e9 e9 17 16 16 16 e8 e9 e9 e9 17 16 16 16 
-ad ae ae 19 ba b8 b8 0f 52 51 51 e6 45 47 47 f0 
-09 0e 22 77 b3 b6 9a 78 e1 e7 cb 9e a4 a0 8c 6e 
-e1 6a bd 3e 52 dc 27 46 b3 3b ec d8 17 9b 60 b6 
-e5 ba f3 ce b7 66 d4 88 04 5d 38 50 13 c6 58 e6 
-71 d0 7d b3 c6 b6 a9 3b c2 eb 91 6b d1 2d c9 8d 
-e9 0d 20 8d 2f bb 89 b6 ed 50 18 dd 3c 7d d1 50 
-96 33 73 66 b9 88 fa d0 54 d8 e2 0d 68 a5 33 5d 
-8b f0 3f 23 32 78 c5 f3 66 a0 27 fe 0e 05 14 a3 
-d6 0a 35 88 e4 72 f0 7b 82 d2 d7 85 8c d7 c3 26 
+  CU_PASS("test_KeyExpansion_00 passed");
+}
 
-For the key 00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f, the expanded key is:
+void test_KeyExpansion_ff(void) {
+  int i;
+  AES_byte key[] =
+    { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+  AES_word actual_w[N_W];
+  AES_word expected_w[N_W] =
+    { 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 
+      0xe8e9e9e9, 0x17161616, 0xe8e9e9e9, 0x17161616, 
+      0xadaeae19, 0xbab8b80f, 0x525151e6, 0x454747f0, 
+      0x090e2277, 0xb3b69a78, 0xe1e7cb9e, 0xa4a08c6e, 
+      0xe16abd3e, 0x52dc2746, 0xb33becd8, 0x179b60b6, 
+      0xe5baf3ce, 0xb766d488, 0x045d3850, 0x13c658e6, 
+      0x71d07db3, 0xc6b6a93b, 0xc2eb916b, 0xd12dc98d, 
+      0xe90d208d, 0x2fbb89b6, 0xed5018dd, 0x3c7dd150, 
+      0x96337366, 0xb988fad0, 0x54d8e20d, 0x68a5335d, 
+      0x8bf03f23, 0x3278c5f3, 0x66a027fe, 0x0e0514a3, 
+      0xd60a3588, 0xe472f07b, 0x82d2d785, 0x8cd7c326 };
 
-00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 
-d6 aa 74 fd d2 af 72 fa da a6 78 f1 d6 ab 76 fe 
-b6 92 cf 0b 64 3d bd f1 be 9b c5 00 68 30 b3 fe 
-b6 ff 74 4e d2 c2 c9 bf 6c 59 0c bf 04 69 bf 41 
-47 f7 f7 bc 95 35 3e 03 f9 6c 32 bc fd 05 8d fd 
-3c aa a3 e8 a9 9f 9d eb 50 f3 af 57 ad f6 22 aa 
-5e 39 0f 7d f7 a6 92 96 a7 55 3d c1 0a a3 1f 6b 
-14 f9 70 1a e3 5f e2 8c 44 0a df 4d 4e a9 c0 26 
-47 43 87 35 a4 1c 65 b9 e0 16 ba f4 ae bf 7a d2 
-54 99 32 d1 f0 85 57 68 10 93 ed 9c be 2c 97 4e 
-13 11 1d 7f e3 94 4a 17 f3 07 a7 8b 4d 2b 30 c5 
+  AES_KeyExpansion(key, actual_w);
+  for (i = 0; i < N_W; i ++)
+    if (actual_w[i] != expected_w[i]) {
+      printf("test_KeyExpansion_ff failed, i=%d, actual=%x, expected=%x\n",
+	       i, actual_w[i], expected_w[i]);
+      CU_FAIL("test_KeyExpansion_ff failed");
+    }
 
- */
+  CU_PASS("test_KeyExpansion_ff passed");
+}
+
+void test_KeyExpansion_01(void) {
+  int i;
+  AES_byte key[] =
+    { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+      0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
+  AES_word actual_w[N_W];
+  AES_word expected_w[N_W] =
+    { 0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f, 
+      0xd6aa74fd, 0xd2af72fa, 0xdaa678f1, 0xd6ab76fe, 
+      0xb692cf0b, 0x643dbdf1, 0xbe9bc500, 0x6830b3fe, 
+      0xb6ff744e, 0xd2c2c9bf, 0x6c590cbf, 0x0469bf41, 
+      0x47f7f7bc, 0x95353e03, 0xf96c32bc, 0xfd058dfd, 
+      0x3caaa3e8, 0xa99f9deb, 0x50f3af57, 0xadf622aa, 
+      0x5e390f7d, 0xf7a69296, 0xa7553dc1, 0x0aa31f6b, 
+      0x14f9701a, 0xe35fe28c, 0x440adf4d, 0x4ea9c026, 
+      0x47438735, 0xa41c65b9, 0xe016baf4, 0xaebf7ad2, 
+      0x549932d1, 0xf0855768, 0x1093ed9c, 0xbe2c974e, 
+      0x13111d7f, 0xe3944a17, 0xf307a78b, 0x4d2b30c5 };
+
+  AES_KeyExpansion(key, actual_w);
+  for (i = 0; i < N_W; i ++)
+    if (actual_w[i] != expected_w[i]) {
+      printf("test_KeyExpansion_01 failed, i=%d, actual=%x, expected=%x\n",
+	       i, actual_w[i], expected_w[i]);
+      CU_FAIL("test_KeyExpansion_01 failed");
+    }
+
+  CU_PASS("test_KeyExpansion_01 passed");
+}
+
+/* From standard, pp. 27 */
+
+void test_SubWord_09(void) {
+  CU_ASSERT(AES_SubWord(0xcf4f3c09) == 0x8a84eb01);
+}
+
+/* From standard, pp. 27 */
+
+void test_RotWord_3c(void) {
+  CU_ASSERT(AES_RotWord(0x09cf4f3c) == 0xcf4f3c09);
+}
 
 void gradle_cunit_register() {
     CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
     CU_add_test(pSuiteRypto, "test_void", test_void);
     CU_add_test(pSuiteRypto, "test_makeword", test_makeword);
+    CU_add_test(pSuiteRypto, "test_SubWord_09", test_SubWord_09);
+    CU_add_test(pSuiteRypto, "test_RotWord_3c", test_RotWord_3c);
+    CU_add_test(pSuiteRypto, "test_KeyExpansion_00", test_KeyExpansion_00);
+    CU_add_test(pSuiteRypto, "test_KeyExpansion_ff", test_KeyExpansion_ff);
+    CU_add_test(pSuiteRypto, "test_KeyExpansion_01", test_KeyExpansion_01);
 }

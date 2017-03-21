@@ -5,7 +5,7 @@
 
 #include "aes.h"
 
-/* AES S-box. Indexed with a hex number XY. From standard. */
+/* AES S-box. Indexed with a hex number XY. From standard pp. 16. */
 
 const AES_byte AES_S_Box[256] = {
   0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
@@ -27,10 +27,11 @@ const AES_byte AES_S_Box[256] = {
 };
 
 /* help var for KeySchedule. from standard pp. 27-
-   this is for 128 bit keys.
+   this is for 128 bit keys. one extra element in the beginning to avoid black magic on indexing.
  */
 
-const AES_word AES_Rcon[10] = {
+const AES_word AES_Rcon[11] = {
+  0,
   0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
   0x20000000, 0x40000000, 0x80000000, 0x1b000000, 0x36000000
 };
@@ -46,6 +47,27 @@ void AES_KaBoom(char *curse) {
 
 AES_word AES_makeword(AES_byte b0, AES_byte b1, AES_byte b2, AES_byte b3) {
   return (AES_word) b0 << 24 | (AES_word) b1 << 16 | (AES_word) b2 << 8 | (AES_word) b3; 
+}
+
+/* KeyExpansion helpers, from the standard, pp. 19. */
+
+AES_word AES_SubWord(AES_word w) {
+  AES_word r; /* result */
+  
+  r = (AES_word) AES_S_Box[w & 0x000000FF]
+    | (AES_word) (AES_S_Box[(w >> 8) & 0x000000FF]) << 8
+    | (AES_word) (AES_S_Box[(w >> 16) & 0x000000FF]) << 16
+    | (AES_word) (AES_S_Box[(w >> 24) & 0x000000FF]) << 24;
+
+  return r;
+}
+
+AES_word AES_RotWord(AES_word w) {
+  AES_word r; /* result */
+
+  r = (w >> 24) | (w << 8); 
+  
+  return r;
 }
 
 /* Generate a key schedule from key (16 bytes) to w.
@@ -66,11 +88,13 @@ void AES_KeyExpansion(AES_byte *key, AES_word *w) {
   for (i = AES_Nk; i < AES_Nb * (AES_Nr + 1); i ++) {
     temp = w[i - 1];
     if (i % AES_Nk == 0) {
-      temp = SubWord(RotWord(temp)) ^ AES_Rcon[i/Nk];
+      temp = AES_SubWord(AES_RotWord(temp)) ^ AES_Rcon[i/AES_Nk];
     } else if (AES_Nk > 6 && i % AES_Nk == 4) {
-      temp = SubWord(temp);
+      /* this part of the code not relevant for us, AES_Nk == 4.
+	 hopefully optimizer takes this away. */
+      temp = AES_SubWord(temp);
     } /* if */
-    w[i] = w[i-Nk] ^ temp;
+    w[i] = w[i-AES_Nk] ^ temp;
   }
 
   return;

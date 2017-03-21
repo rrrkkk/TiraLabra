@@ -20,4 +20,6 @@ typedef u_int32_t AES_word;
 
 void AES_KaBoom(char *);
 AES_word AES_makeword(AES_byte b0, AES_byte b1, AES_byte b2, AES_byte b3);
+AES_word AES_SubWord(AES_word w);
+AES_word AES_RotWord(AES_word w);
 void AES_KeyExpansion(AES_byte *key, AES_word *w);

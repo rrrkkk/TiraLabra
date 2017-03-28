@@ -7,7 +7,7 @@
 
 /* AES S-box. Indexed with a hex number XY. From standard pp. 16. */
 
-const AES_byte AES_S_Box[256] = {
+static const AES_byte AES_S_Box[256] = {
   0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
   0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
   0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -30,7 +30,7 @@ const AES_byte AES_S_Box[256] = {
    this is for 128 bit keys. one extra element in the beginning to avoid black magic on indexing.
  */
 
-const AES_word AES_Rcon[11] = {
+static const AES_word AES_Rcon[11] = {
   0,
   0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000,
   0x20000000, 0x40000000, 0x80000000, 0x1b000000, 0x36000000
@@ -98,4 +98,41 @@ void AES_KeyExpansion(AES_byte *key, AES_word *w) {
   }
 
   return;
+}
+
+/* Note that state columns and rows are reversed from the standard
+   in all functions below.
+   e.g. when standard refers to state[x,y], we use state[y,x] */
+
+/* AddRoundKey - transformation. Standard pp. 18- */
+
+void AES_AddRoundKey(AES_byte state[AES_Nb][4], AES_word *w) {
+  AES_byte b[4]; /* individual bytes of each word. endianness. */
+  int i, j;
+  for (i = 0; i < AES_Nb; i ++) {
+    b[0] = w[i] >> 24;
+    b[1] = (w[i] >> 16) & 0xff;
+    b[2] = (w[i] >> 8) & 0xff;
+    b[3] = w[i] & 0xff;
+    for (j = 0; j < 4; j ++) {
+      state[j][i] ^= b[j];
+    } /* for j */
+  } /* for i */
+} /* AES_AddRoundKey */
+
+/* encrypt. key in standard is referred as w in here for internal consitence. */
+
+void AES_encrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *w) {
+  int i, j, k;
+  AES_byte state[AES_Nb][4];
+  k = 0;
+  for (i = 0; i < AES_Nb; i ++) {
+    for (j = 0; j < 4; j ++) {
+      state[j][i] = plaintext[k];
+      k ++;
+    } /* for j */
+  } /* for i */
+
+  /* XXX kesken */
+  
 }

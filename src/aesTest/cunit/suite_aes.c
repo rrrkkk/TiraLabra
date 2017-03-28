@@ -36,6 +36,7 @@ void test_makeword(void) {
 
 void test_KeyExpansion_00(void) {
   int i;
+  int passed = 1;
   AES_byte key[] =
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -59,13 +60,16 @@ void test_KeyExpansion_00(void) {
       printf("test_KeyExpansion_00 failed, i=%d, actual=%x, expected=%x\n",
 	       i, actual_w[i], expected_w[i]);
       CU_FAIL("test_KeyExpansion_00 failed");
+      passed = 0;
     }
 
-  CU_PASS("test_KeyExpansion_00 passed");
+  if (passed)
+    CU_PASS("test_KeyExpansion_00 passed");
 }
 
 void test_KeyExpansion_ff(void) {
   int i;
+  int passed = 1;
   AES_byte key[] =
     { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
       0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
@@ -89,13 +93,16 @@ void test_KeyExpansion_ff(void) {
       printf("test_KeyExpansion_ff failed, i=%d, actual=%x, expected=%x\n",
 	       i, actual_w[i], expected_w[i]);
       CU_FAIL("test_KeyExpansion_ff failed");
+      passed = 0;
     }
 
-  CU_PASS("test_KeyExpansion_ff passed");
+  if (passed)
+    CU_PASS("test_KeyExpansion_ff passed");
 }
 
 void test_KeyExpansion_01(void) {
   int i;
+  int passed = 1;
   AES_byte key[] =
     { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
       0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
@@ -119,9 +126,11 @@ void test_KeyExpansion_01(void) {
       printf("test_KeyExpansion_01 failed, i=%d, actual=%x, expected=%x\n",
 	       i, actual_w[i], expected_w[i]);
       CU_FAIL("test_KeyExpansion_01 failed");
+      passed = 0;
     }
 
-  CU_PASS("test_KeyExpansion_01 passed");
+  if (passed)
+    CU_PASS("test_KeyExpansion_01 passed");
 }
 
 /* From standard, pp. 27 */
@@ -136,6 +145,42 @@ void test_RotWord_3c(void) {
   CU_ASSERT(AES_RotWord(0x09cf4f3c) == 0xcf4f3c09);
 }
 
+/* From standard, pp. 33 */
+
+void test_AddRoundKey_32(void) {
+  AES_byte state_actual[4][4] = {
+    {0x32, 0x43, 0xf6, 0xa8},
+    {0x88, 0x5a, 0x30, 0x8d},
+    {0x31, 0x98, 0x98, 0xa2},
+    {0xe0, 0x37, 0x07, 0x34}
+  };
+  AES_byte state_expected[4][4] = {
+    {0x19, 0x3d, 0xe3, 0xbe},
+    {0xa0, 0xf4, 0xe2, 0x2b},
+    {0x9a, 0xc6, 0x8d, 0x2a},
+    {0xe9, 0xf8, 0x48, 0x08}
+  };
+  AES_word w[] = {0x2b7e1516, 0x28aed2a6, 0xabf71588, 0x09cf4f3c};
+  int i, j;
+  int passed = 1;
+  
+  AES_AddRoundKey(state_actual, w);
+  for (i = 0; i < 4; i ++) {
+    for (j = 0; j < 4; j ++) {
+      if (state_actual[j][i] != state_expected[j][i]) {
+	passed = 0;
+	printf("test_AddRoundKey_32 failed, i=%d, j=%d, actual=%x, expected=%x\n",
+	       i, j, state_actual[j][i], state_expected[j][i]);
+	CU_FAIL("test_AddRoundKey_32 failed");
+      }
+    }
+  }
+  
+  if (passed)
+    CU_PASS("test_AddRoundKey_32 passed");
+  
+}
+
 void gradle_cunit_register() {
     CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
     CU_add_test(pSuiteRypto, "test_void", test_void);
@@ -145,4 +190,5 @@ void gradle_cunit_register() {
     CU_add_test(pSuiteRypto, "test_KeyExpansion_00", test_KeyExpansion_00);
     CU_add_test(pSuiteRypto, "test_KeyExpansion_ff", test_KeyExpansion_ff);
     CU_add_test(pSuiteRypto, "test_KeyExpansion_01", test_KeyExpansion_01);
+    CU_add_test(pSuiteRypto, "test_AddRoundKey_32", test_AddRoundKey_32);
 }

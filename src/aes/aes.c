@@ -114,8 +114,12 @@ void AES_AddRoundKey(AES_byte state[AES_Nb][4], AES_word *w) {
     b[1] = (w[i] >> 16) & 0xff;
     b[2] = (w[i] >> 8) & 0xff;
     b[3] = w[i] & 0xff;
+    /* printf("AddRoundKey: i=%d, b[0]=%x, b[1]=%x, b[2]=%x, b[3]=%x\n",
+	   i, b[0], b[1], b[2], b[3]); */
     for (j = 0; j < 4; j ++) {
-      state[j][i] ^= b[j];
+      /* printf("AddRoundKey: j=%d, state before=%x", j, state[i][j]); */
+      state[i][j] ^= b[j];
+      /* printf(", state after=%x\n", state[i][j]); */
     } /* for j */
   } /* for i */
 } /* AES_AddRoundKey */

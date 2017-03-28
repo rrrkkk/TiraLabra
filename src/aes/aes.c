@@ -102,7 +102,7 @@ void AES_KeyExpansion(AES_byte *key, AES_word *w) {
 
 /* Note that state columns and rows are reversed from the standard
    in all functions below.
-   e.g. when standard refers to state[x,y], we use state[y,x] */
+   e.g. when standard refers to state[x,y], we use state[y][x] */
 
 /* AddRoundKey - transformation. Standard pp. 18- */
 
@@ -123,6 +123,17 @@ void AES_AddRoundKey(AES_byte state[AES_Nb][4], AES_word *w) {
     } /* for j */
   } /* for i */
 } /* AES_AddRoundKey */
+
+/* SubBytes transformation. Standard pp. 15 */
+
+void AES_SubBytes(AES_byte state[AES_Nb][4]) {
+ int i, j;
+  for (i = 0; i < AES_Nb; i ++) {
+     for (j = 0; j < 4; j ++) {
+       state[j][i] = AES_S_Box[state[j][i]];
+     }
+  }
+}
 
 /* encrypt. key in standard is referred as w in here for internal consitence. */
 

@@ -181,6 +181,41 @@ void test_AddRoundKey_32(void) {
   
 }
 
+/* From standard, pp. 33 */
+
+void test_SubBytes_19(void) {
+  AES_byte state_actual[4][4] = {
+    {0x19, 0x3d, 0xe3, 0xbe},
+    {0xa0, 0xf4, 0xe2, 0x2b},
+    {0x9a, 0xc6, 0x8d, 0x2a},
+    {0xe9, 0xf8, 0x48, 0x08}
+  };
+  AES_byte state_expected[4][4] = {
+    {0xd4, 0x27, 0x11, 0xae},
+    {0xe0, 0xbf, 0x98, 0xf1},
+    {0xb8, 0xb4, 0x5d, 0xe5},
+    {0x1e, 0x41, 0x52, 0x30}
+  };
+  int i, j;
+  int passed = 1;
+  
+  AES_SubBytes(state_actual);
+  for (i = 0; i < 4; i ++) {
+    for (j = 0; j < 4; j ++) {
+      if (state_actual[j][i] != state_expected[j][i]) {
+	passed = 0;
+	printf("test_SubBytes_19 failed, i=%d, j=%d, actual=%x, expected=%x\n",
+	       i, j, state_actual[j][i], state_expected[j][i]);
+	CU_FAIL("test_SubBytes_19 failed");
+      }
+    }
+  }
+  
+  if (passed)
+    CU_PASS("test_SubBytes_19 passed");
+  
+}
+
 void gradle_cunit_register() {
     CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
     CU_add_test(pSuiteRypto, "test_void", test_void);
@@ -191,4 +226,5 @@ void gradle_cunit_register() {
     CU_add_test(pSuiteRypto, "test_KeyExpansion_ff", test_KeyExpansion_ff);
     CU_add_test(pSuiteRypto, "test_KeyExpansion_01", test_KeyExpansion_01);
     CU_add_test(pSuiteRypto, "test_AddRoundKey_32", test_AddRoundKey_32);
+    CU_add_test(pSuiteRypto, "test_SubBytes_19", test_SubBytes_19);
 }

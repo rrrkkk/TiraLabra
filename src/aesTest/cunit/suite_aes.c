@@ -216,6 +216,41 @@ void test_SubBytes_19(void) {
   
 }
 
+/* From standard, pp. 33 */
+
+void test_ShiftRows_d4(void) {
+  AES_byte state_actual[4][4] = {
+    {0xd4, 0x27, 0x11, 0xae},
+    {0xe0, 0xbf, 0x98, 0xf1},
+    {0xb8, 0xb4, 0x5d, 0xe5},
+    {0x1e, 0x41, 0x52, 0x30}
+  };
+  AES_byte state_expected[4][4] = {
+    {0xd4, 0xbf, 0x5d, 0x30},
+    {0xe0, 0xb4, 0x52, 0xae},
+    {0xb8, 0x41, 0x11, 0xf1},
+    {0x1e, 0x27, 0x98, 0xe5}
+  };
+  int i, j;
+  int passed = 1;
+  
+  AES_ShiftRows(state_actual);
+  for (i = 0; i < 4; i ++) {
+    for (j = 0; j < 4; j ++) {
+      if (state_actual[j][i] != state_expected[j][i]) {
+	passed = 0;
+	printf("test_ShiftRows_d4 failed, j=%d, i=%d, actual=%x, expected=%x\n",
+	       j, i, state_actual[j][i], state_expected[j][i]);
+	CU_FAIL("test_ShiftRows_d4 failed");
+      }
+    }
+  }
+  
+  if (passed)
+    CU_PASS("test_ShiftRows_d4 passed");
+  
+}
+
 void gradle_cunit_register() {
     CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
     CU_add_test(pSuiteRypto, "test_void", test_void);
@@ -227,4 +262,5 @@ void gradle_cunit_register() {
     CU_add_test(pSuiteRypto, "test_KeyExpansion_01", test_KeyExpansion_01);
     CU_add_test(pSuiteRypto, "test_AddRoundKey_32", test_AddRoundKey_32);
     CU_add_test(pSuiteRypto, "test_SubBytes_19", test_SubBytes_19);
+    CU_add_test(pSuiteRypto, "test_ShiftRows_d4", test_ShiftRows_d4);
 }

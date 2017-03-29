@@ -135,7 +135,7 @@ static AES_byte AES_g_m[6][256] = {
    0x0c,0x02,0x10,0x1e,0x34,0x3a,0x28,0x26,0x7c,0x72,0x60,0x6e,0x44,0x4a,0x58,0x56,
    0x37,0x39,0x2b,0x25,0x0f,0x01,0x13,0x1d,0x47,0x49,0x5b,0x55,0x7f,0x71,0x63,0x6d,
    0xd7,0xd9,0xcb,0xc5,0xef,0xe1,0xf3,0xfd,0xa7,0xa9,0xbb,0xb5,0x9f,0x91,0x83,0x8d}
-}
+};
 
 /* Unrecoverable error, bail out */
 
@@ -267,6 +267,92 @@ void AES_ShiftRows(AES_byte state[AES_Nb][4]) {
 /* MixColumns transformation. Standard pp. 17 */
 
 void AES_MixColumns(AES_byte state[AES_Nb][4]) {
+  AES_byte b0, b1, b2, b3;
+
+  b0 = state[0][0];
+  b1 = state[0][1];
+  b2 = state[0][2];
+  b3 = state[0][3];
+  state[0][0] = AES_g_m[0][b0];
+  state[0][0] ^= AES_g_m[1][b1];
+  state[0][0] ^= b2;
+  state[0][0] ^= b3;
+  state[0][1] = b0;
+  state[0][1] ^= AES_g_m[0][b1];
+  state[0][1] ^= AES_g_m[1][b2];
+  state[0][1] ^= b3;
+  state[0][2] = b0;
+  state[0][2] ^= b1;
+  state[0][2] ^= AES_g_m[0][b2];
+  state[0][2] ^= AES_g_m[1][b3];
+  state[0][3] = AES_g_m[1][b0];
+  state[0][3] ^= b1;
+  state[0][3] ^= b2;
+  state[0][3] ^= AES_g_m[0][b3];
+
+  b0 = state[1][0];
+  b1 = state[1][1];
+  b2 = state[1][2];
+  b3 = state[1][3];
+  state[1][0] = AES_g_m[0][b0];
+  state[1][0] ^= AES_g_m[1][b1];
+  state[1][0] ^= b2;
+  state[1][0] ^= b3;
+  state[1][1] = b0;
+  state[1][1] ^= AES_g_m[0][b1];
+  state[1][1] ^= AES_g_m[1][b2];
+  state[1][1] ^= b3;
+  state[1][2] = b0;
+  state[1][2] ^= b1;
+  state[1][2] ^= AES_g_m[0][b2];
+  state[1][2] ^= AES_g_m[1][b3];
+  state[1][3] = AES_g_m[1][b0];
+  state[1][3] ^= b1;
+  state[1][3] ^= b2;
+  state[1][3] ^= AES_g_m[0][b3];
+
+  b0 = state[2][0];
+  b1 = state[2][1];
+  b2 = state[2][2];
+  b3 = state[2][3];
+  state[2][0] = AES_g_m[0][b0];
+  state[2][0] ^= AES_g_m[1][b1];
+  state[2][0] ^= b2;
+  state[2][0] ^= b3;
+  state[2][1] = b0;
+  state[2][1] ^= AES_g_m[0][b1];
+  state[2][1] ^= AES_g_m[1][b2];
+  state[2][1] ^= b3;
+  state[2][2] = b0;
+  state[2][2] ^= b1;
+  state[2][2] ^= AES_g_m[0][b2];
+  state[2][2] ^= AES_g_m[1][b3];
+  state[2][3] = AES_g_m[1][b0];
+  state[2][3] ^= b1;
+  state[2][3] ^= b2;
+  state[2][3] ^= AES_g_m[0][b3];
+
+  b0 = state[3][0];
+  b1 = state[3][1];
+  b2 = state[3][2];
+  b3 = state[3][3];
+  state[3][0] = AES_g_m[0][b0];
+  state[3][0] ^= AES_g_m[1][b1];
+  state[3][0] ^= b2;
+  state[3][0] ^= b3;
+  state[3][1] = b0;
+  state[3][1] ^= AES_g_m[0][b1];
+  state[3][1] ^= AES_g_m[1][b2];
+  state[3][1] ^= b3;
+  state[3][2] = b0;
+  state[3][2] ^= b1;
+  state[3][2] ^= AES_g_m[0][b2];
+  state[3][2] ^= AES_g_m[1][b3];
+  state[3][3] = AES_g_m[1][b0];
+  state[3][3] ^= b1;
+  state[3][3] ^= b2;
+  state[3][3] ^= AES_g_m[0][b3];
+  
 }
 
 /* encrypt. key in standard is referred as w in here for internal consitence. */

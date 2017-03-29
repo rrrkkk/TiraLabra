@@ -360,6 +360,7 @@ void AES_MixColumns(AES_byte state[AES_Nb][4]) {
 void AES_encrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *w) {
   int i, j, k;
   AES_byte state[AES_Nb][4];
+  
   k = 0;
   for (i = 0; i < AES_Nb; i ++) {
     for (j = 0; j < 4; j ++) {
@@ -370,4 +371,12 @@ void AES_encrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *w) {
 
   /* XXX kesken */
   
+  k = 0;
+  for (i = 0; i < AES_Nb; i ++) {
+    for (j = 0; j < 4; j ++) {
+      ciphertext[k] = state[j][i];
+      k ++;
+    } /* for j */
+  } /* for i */
+
 }

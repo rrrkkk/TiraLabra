@@ -255,6 +255,17 @@ void AES_SubBytes(AES_byte state[AES_Nb][4]) {
   }
 }
 
+/* InvSubBytes transformation. Standard pp. 22 */
+
+void AES_InvSubBytes(AES_byte state[AES_Nb][4]) {
+ int i, j;
+  for (i = 0; i < AES_Nb; i ++) {
+     for (j = 0; j < 4; j ++) {
+       state[j][i] = AES_inverse_S_Box[state[j][i]];
+     }
+  }
+}
+
 /* ShiftRows transformation. Standard pp. 17 */
 
 void AES_ShiftRows(AES_byte state[AES_Nb][4]) {
@@ -280,6 +291,34 @@ void AES_ShiftRows(AES_byte state[AES_Nb][4]) {
   state[3][3] = state[2][3];
   state[2][3] = state[1][3];
   state[1][3] = b0;
+ 
+}
+
+/* InvShiftRows transformation. Standard pp. 21 */
+
+void AES_InvShiftRows(AES_byte state[AES_Nb][4]) {
+  AES_byte b0, b1;
+
+  /* row 0: NOP */
+  /* row 1 */
+  b0 = state[3][1];
+  state[3][1] = state[2][1];
+  state[2][1] = state[1][1];
+  state[1][1] = state[0][1];
+  state[0][1] = b0;
+  /* row 2 */
+  b0 = state[2][2];
+  b1 = state[3][2];
+  state[2][2] = state[0][2];
+  state[3][2] = state[1][2];
+  state[0][2] = b0;
+  state[1][2] = b1;
+  /* row 3 */
+  b0 = state[3][3];
+  state[3][3] = state[0][3];
+  state[0][3] = state[1][3];
+  state[1][3] = state[2][3];
+  state[2][3] = b0;
  
 }
 
@@ -374,6 +413,97 @@ void AES_MixColumns(AES_byte state[AES_Nb][4]) {
   
 }
 
+/* InvMixColumns transformation. Standard pp. 23 */
+
+void AES_InvMixColumns(AES_byte state[AES_Nb][4]) {
+  AES_byte b0, b1, b2, b3;
+
+   b0 = state[0][0];
+   b1 = state[0][1];
+   b2 = state[0][2];
+   b3 = state[0][3];
+   state[0][0] = AES_g_m[5][b0];
+   state[0][0] ^= AES_g_m[3][b1];
+   state[0][0] ^= AES_g_m[4][b2];
+   state[0][0] ^= AES_g_m[2][b3];
+   state[0][1] = AES_g_m[2][b0];
+   state[0][1] ^= AES_g_m[5][b1];
+   state[0][1] ^= AES_g_m[3][b2];
+   state[0][1] ^= AES_g_m[4][b3];
+   state[0][2] = AES_g_m[4][b0];
+   state[0][2] ^= AES_g_m[2][b1];
+   state[0][2] ^= AES_g_m[5][b2];
+   state[0][2] ^= AES_g_m[3][b3];
+   state[0][3] = AES_g_m[3][b0];
+   state[0][3] ^= AES_g_m[4][b1];
+   state[0][3] ^= AES_g_m[2][b2];
+   state[0][3] ^= AES_g_m[5][b3];
+
+   b0 = state[1][0];
+   b1 = state[1][1];
+   b2 = state[1][2];
+   b3 = state[1][3];
+   state[1][0] = AES_g_m[5][b0];
+   state[1][0] ^= AES_g_m[3][b1];
+   state[1][0] ^= AES_g_m[4][b2];
+   state[1][0] ^= AES_g_m[2][b3];
+   state[1][1] = AES_g_m[2][b0];
+   state[1][1] ^= AES_g_m[5][b1];
+   state[1][1] ^= AES_g_m[3][b2];
+   state[1][1] ^= AES_g_m[4][b3];
+   state[1][2] = AES_g_m[4][b0];
+   state[1][2] ^= AES_g_m[2][b1];
+   state[1][2] ^= AES_g_m[5][b2];
+   state[1][2] ^= AES_g_m[3][b3];
+   state[1][3] = AES_g_m[3][b0];
+   state[1][3] ^= AES_g_m[4][b1];
+   state[1][3] ^= AES_g_m[2][b2];
+   state[1][3] ^= AES_g_m[5][b3];
+
+   b0 = state[2][0];
+   b1 = state[2][1];
+   b2 = state[2][2];
+   b3 = state[2][3];
+   state[2][0] = AES_g_m[5][b0];
+   state[2][0] ^= AES_g_m[3][b1];
+   state[2][0] ^= AES_g_m[4][b2];
+   state[2][0] ^= AES_g_m[2][b3];
+   state[2][1] = AES_g_m[2][b0];
+   state[2][1] ^= AES_g_m[5][b1];
+   state[2][1] ^= AES_g_m[3][b2];
+   state[2][1] ^= AES_g_m[4][b3];
+   state[2][2] = AES_g_m[4][b0];
+   state[2][2] ^= AES_g_m[2][b1];
+   state[2][2] ^= AES_g_m[5][b2];
+   state[2][2] ^= AES_g_m[3][b3];
+   state[2][3] = AES_g_m[3][b0];
+   state[2][3] ^= AES_g_m[4][b1];
+   state[2][3] ^= AES_g_m[2][b2];
+   state[2][3] ^= AES_g_m[5][b3];
+
+   b0 = state[3][0];
+   b1 = state[3][1];
+   b2 = state[3][2];
+   b3 = state[3][3];
+   state[3][0] = AES_g_m[5][b0];
+   state[3][0] ^= AES_g_m[3][b1];
+   state[3][0] ^= AES_g_m[4][b2];
+   state[3][0] ^= AES_g_m[2][b3];
+   state[3][1] = AES_g_m[2][b0];
+   state[3][1] ^= AES_g_m[5][b1];
+   state[3][1] ^= AES_g_m[3][b2];
+   state[3][1] ^= AES_g_m[4][b3];
+   state[3][2] = AES_g_m[4][b0];
+   state[3][2] ^= AES_g_m[2][b1];
+   state[3][2] ^= AES_g_m[5][b2];
+   state[3][2] ^= AES_g_m[3][b3];
+   state[3][3] = AES_g_m[3][b0];
+   state[3][3] ^= AES_g_m[4][b1];
+   state[3][3] ^= AES_g_m[2][b2];
+   state[3][3] ^= AES_g_m[5][b3];
+  
+}
+
 /* encrypt. standard, pp. 15 */
 
 void AES_encrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *w) {
@@ -406,6 +536,44 @@ void AES_encrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *w) {
   for (i = 0; i < AES_Nb; i ++) {
     for (j = 0; j < 4; j ++) {
       ciphertext[k] = state[i][j];
+      k ++;
+    } /* for j */
+  } /* for i */
+
+}
+
+/* decrypt. standard, pp. 21 */
+
+void AES_decrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *w) {
+  int i, j, k; /* indices to state and *text */
+  int r; /* current round */
+  AES_byte state[AES_Nb][4];
+  
+  k = 0;
+  for (i = 0; i < AES_Nb; i ++) {
+    for (j = 0; j < 4; j ++) {
+      state[i][j] = ciphertext[k];
+      k ++;
+    } /* for j */
+  } /* for i */
+
+  AES_AddRoundKey(state, w + 40);
+  
+  for (r = AES_Nr - 1; r > 0; r --) {
+    AES_InvShiftRows(state);
+    AES_InvSubBytes(state);
+    AES_AddRoundKey(state, w + 4 * r);
+    AES_InvMixColumns(state);
+  }
+  
+  AES_InvShiftRows(state);
+  AES_InvSubBytes(state);
+  AES_AddRoundKey(state, w);
+  
+  k = 0;
+  for (i = 0; i < AES_Nb; i ++) {
+    for (j = 0; j < 4; j ++) {
+      plaintext[k] = state[i][j];
       k ++;
     } /* for j */
   } /* for i */

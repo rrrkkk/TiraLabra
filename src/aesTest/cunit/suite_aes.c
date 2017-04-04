@@ -216,6 +216,41 @@ void test_SubBytes_19(void) {
   
 }
 
+/* Derived from the previous one */
+
+void test_InvSubBytes_d4(void) {
+  AES_byte state_expected[4][4] = {
+    {0x19, 0x3d, 0xe3, 0xbe},
+    {0xa0, 0xf4, 0xe2, 0x2b},
+    {0x9a, 0xc6, 0x8d, 0x2a},
+    {0xe9, 0xf8, 0x48, 0x08}
+  };
+  AES_byte state_actual[4][4] = {
+    {0xd4, 0x27, 0x11, 0xae},
+    {0xe0, 0xbf, 0x98, 0xf1},
+    {0xb8, 0xb4, 0x5d, 0xe5},
+    {0x1e, 0x41, 0x52, 0x30}
+  };
+  int i, j;
+  int passed = 1;
+  
+  AES_InvSubBytes(state_actual);
+  for (i = 0; i < 4; i ++) {
+    for (j = 0; j < 4; j ++) {
+      if (state_actual[j][i] != state_expected[j][i]) {
+	passed = 0;
+	printf("test_InvSubBytes_d4 failed, i=%d, j=%d, actual=%x, expected=%x\n",
+	       i, j, state_actual[j][i], state_expected[j][i]);
+	CU_FAIL("test_InvSubBytes_d4 failed");
+      }
+    }
+  }
+  
+  if (passed)
+    CU_PASS("test_InvSubBytes_d4 passed");
+  
+}
+
 /* From standard, pp. 33 */
 
 void test_ShiftRows_d4(void) {
@@ -248,6 +283,41 @@ void test_ShiftRows_d4(void) {
   
   if (passed)
     CU_PASS("test_ShiftRows_d4 passed");
+  
+}
+
+/* The previous test inverted */
+
+void test_InvShiftRows_d4(void) {
+  AES_byte state_expected[4][4] = {
+    {0xd4, 0x27, 0x11, 0xae},
+    {0xe0, 0xbf, 0x98, 0xf1},
+    {0xb8, 0xb4, 0x5d, 0xe5},
+    {0x1e, 0x41, 0x52, 0x30}
+  };
+  AES_byte state_actual[4][4] = {
+    {0xd4, 0xbf, 0x5d, 0x30},
+    {0xe0, 0xb4, 0x52, 0xae},
+    {0xb8, 0x41, 0x11, 0xf1},
+    {0x1e, 0x27, 0x98, 0xe5}
+  };
+  int i, j;
+  int passed = 1;
+  
+  AES_InvShiftRows(state_actual);
+  for (i = 0; i < 4; i ++) {
+    for (j = 0; j < 4; j ++) {
+      if (state_actual[j][i] != state_expected[j][i]) {
+	passed = 0;
+	printf("test_InvShiftRows_d4 failed, j=%d, i=%d, actual=%x, expected=%x\n",
+	       j, i, state_actual[j][i], state_expected[j][i]);
+	CU_FAIL("test_InvShiftRows_d4 failed");
+      }
+    }
+  }
+  
+  if (passed)
+    CU_PASS("test_InvShiftRows_d4 passed");
   
 }
 
@@ -286,6 +356,41 @@ void test_MixColumns_d4(void) {
   
 }
 
+/* The previous, reversed */
+
+void test_InvMixColumns_04(void) {
+  AES_byte state_expected[4][4] = {
+    {0xd4, 0xbf, 0x5d, 0x30},
+    {0xe0, 0xb4, 0x52, 0xae},
+    {0xb8, 0x41, 0x11, 0xf1},
+    {0x1e, 0x27, 0x98, 0xe5}
+  };
+  AES_byte state_actual[4][4] = {
+    {0x04, 0x66, 0x81, 0xe5},
+    {0xe0, 0xcb, 0x19, 0x9a},
+    {0x48, 0xf8, 0xd3, 0x7a},
+    {0x28, 0x06, 0x26, 0x4c}
+  };
+  int i, j;
+  int passed = 1;
+  
+  AES_InvMixColumns(state_actual);
+  for (i = 0; i < 4; i ++) {
+    for (j = 0; j < 4; j ++) {
+      if (state_actual[j][i] != state_expected[j][i]) {
+	passed = 0;
+	printf("test_InvMixColumns_04 failed, j=%d, i=%d, actual=%x, expected=%x\n",
+	       j, i, state_actual[j][i], state_expected[j][i]);
+	CU_FAIL("test_InvMixColumns_04 failed");
+      }
+    }
+  }
+  
+  if (passed)
+    CU_PASS("test_InvMixColumns_04 passed");
+  
+}
+
 /* From standard, pp. 35- */
 
 void test_encrypt_00(void) {
@@ -320,6 +425,40 @@ void test_encrypt_00(void) {
   
 }
 
+/* From standard, pp. 36-; previous one reversed. */
+
+void test_decrypt_69(void) {
+  AES_word w[N_W];
+  AES_byte plaintext_expected[16] = {
+    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff
+  };
+  AES_byte key[16] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+  };
+  AES_byte plaintext_actual[16];
+  AES_byte ciphertext[16] = {
+    0x69, 0xc4, 0xe0, 0xd8, 0x6a, 0x7b, 0x04, 0x30, 0xd8, 0xcd, 0xb7, 0x80, 0x70, 0xb4, 0xc5, 0x5a
+  };
+  int i;
+  int passed = 1;
+
+  AES_KeyExpansion(key, w);
+  AES_decrypt(plaintext_actual, ciphertext, w);
+  
+  for (i = 0; i < 16; i ++) {
+    if (plaintext_actual[i] != plaintext_expected[i]) {
+      passed = 0;
+      printf("test_decrypt_69 failed, i=%d, actual=%x, expected=%x\n",
+	     i, plaintext_actual[i], plaintext_expected[i]);
+      CU_FAIL("test_decrypt_69 failed");
+    }
+  }
+  
+  if (passed)
+    CU_PASS("test_decrypt_69 passed");
+  
+}
+
 void gradle_cunit_register() {
     CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
     CU_add_test(pSuiteRypto, "test_void", test_void);
@@ -331,7 +470,11 @@ void gradle_cunit_register() {
     CU_add_test(pSuiteRypto, "test_KeyExpansion_01", test_KeyExpansion_01);
     CU_add_test(pSuiteRypto, "test_AddRoundKey_32", test_AddRoundKey_32);
     CU_add_test(pSuiteRypto, "test_SubBytes_19", test_SubBytes_19);
+    CU_add_test(pSuiteRypto, "test_InvSubBytes_d4", test_InvSubBytes_d4);
     CU_add_test(pSuiteRypto, "test_ShiftRows_d4", test_ShiftRows_d4);
+    CU_add_test(pSuiteRypto, "test_InvShiftRows_d4", test_InvShiftRows_d4);
     CU_add_test(pSuiteRypto, "test_MixColumns_d4", test_MixColumns_d4);
+    CU_add_test(pSuiteRypto, "test_InvMixColumns_04", test_InvMixColumns_04);
     CU_add_test(pSuiteRypto, "test_encrypt_00", test_encrypt_00);
+    CU_add_test(pSuiteRypto, "test_decrypt_00", test_decrypt_69);
 }

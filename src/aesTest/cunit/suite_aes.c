@@ -286,6 +286,40 @@ void test_MixColumns_d4(void) {
   
 }
 
+/* From standard, pp. 35- */
+
+void test_encrypt_00(void) {
+  AES_word w[N_W];
+  AES_byte plaintext[16] = {
+    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff
+  };
+  AES_byte key[16] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+  };
+  AES_byte ciphertext_actual[16];
+  AES_byte ciphertext_expected[16] = {
+    0x69, 0xc4, 0xe0, 0xd8, 0x6a, 0x7b, 0x04, 0x30, 0xd8, 0xcd, 0xb7, 0x80, 0x70, 0xb4, 0xc5, 0x5a
+  };
+  int i;
+  int passed = 1;
+
+  AES_KeyExpansion(key, w);
+  AES_encrypt(plaintext, ciphertext_actual, w);
+  
+  for (i = 0; i < 16; i ++) {
+    if (ciphertext_actual[i] != ciphertext_expected[i]) {
+      passed = 0;
+      printf("test_encrypt_00 failed, i=%d, actual=%x, expected=%x\n",
+	     i, ciphertext_actual[i], ciphertext_expected[i]);
+      CU_FAIL("test_encrypt_00 failed");
+    }
+  }
+  
+  if (passed)
+    CU_PASS("test_encrypt_00 passed");
+  
+}
+
 void gradle_cunit_register() {
     CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
     CU_add_test(pSuiteRypto, "test_void", test_void);
@@ -299,4 +333,5 @@ void gradle_cunit_register() {
     CU_add_test(pSuiteRypto, "test_SubBytes_19", test_SubBytes_19);
     CU_add_test(pSuiteRypto, "test_ShiftRows_d4", test_ShiftRows_d4);
     CU_add_test(pSuiteRypto, "test_MixColumns_d4", test_MixColumns_d4);
+    CU_add_test(pSuiteRypto, "test_encrypt_00", test_encrypt_00);
 }

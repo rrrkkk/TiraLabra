@@ -221,7 +221,7 @@ void AES_KeyExpansion(AES_byte *key, AES_word *w) {
 }
 
 /* Note that state columns and rows are reversed from the standard
-   in all functions below.
+   in all helper functions below.
    e.g. when standard refers to state[x,y], we use state[y][x] */
 
 /* AddRoundKey - transformation. Standard pp. 18- */
@@ -374,26 +374,38 @@ void AES_MixColumns(AES_byte state[AES_Nb][4]) {
   
 }
 
-/* encrypt. key in standard is referred as w in here for internal consitence. */
+/* encrypt. standard, pp. 15 */
 
 void AES_encrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *w) {
-  int i, j, k;
+  int i, j, k; /* indices to state and *text */
+  int r; /* current round */
   AES_byte state[AES_Nb][4];
   
   k = 0;
   for (i = 0; i < AES_Nb; i ++) {
     for (j = 0; j < 4; j ++) {
-      state[j][i] = plaintext[k];
+      state[i][j] = plaintext[k];
       k ++;
     } /* for j */
   } /* for i */
 
-  /* XXX kesken */
+  AES_AddRoundKey(state, w);
+  
+  for (r = 1; r < AES_Nr; r ++) {
+    AES_SubBytes(state);
+    AES_ShiftRows(state);
+    AES_MixColumns(state);
+    AES_AddRoundKey(state, w + 4 * r);
+  }
+
+  AES_SubBytes(state);
+  AES_ShiftRows(state);
+  AES_AddRoundKey(state, w + 40);
   
   k = 0;
   for (i = 0; i < AES_Nb; i ++) {
     for (j = 0; j < 4; j ++) {
-      ciphertext[k] = state[j][i];
+      ciphertext[k] = state[i][j];
       k ++;
     } /* for j */
   } /* for i */

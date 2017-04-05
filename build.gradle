@@ -49,7 +49,7 @@ model {
                 headers.srcDir "/usr/local/include"
                 binaries.withType(StaticLibraryBinary) {
                     staticLibraryFile =
-                        file("/usr/local/lib/libcunit.a")
+                        file("libs/libcunit.a")
 			// +
                         //      findCUnitLibForPlatform(targetPlatform))
                 }

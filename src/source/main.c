@@ -104,7 +104,7 @@ void do_decrypt(AES_word *w, FILE *infile, FILE *outfile) {
 
 int main(int argc, char** argv) {
   int encrypt;
-  int i, n, n_read, n_written, final, pad_needed;
+  int i;
   int key_error = 0;
   FILE *infile, *outfile;
   AES_byte key[16];

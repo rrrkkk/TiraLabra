@@ -1,6 +1,8 @@
 
 /* rypto main program */
 
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,8 +19,9 @@ int debug = 0;
 
 /* encrypt and PKCS#7 pad. */
 
-void do_encrypt(AES_word *w, FILE *infile, FILE *outfile) {
-  int i, n, n_read, n_written, final, pad;
+void do_encrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n_w_p) {
+  int i, n, final, pad;
+  off_t n_read, n_written;
   AES_byte in[16], out[16];
 
   final = 0;
@@ -43,6 +46,8 @@ void do_encrypt(AES_word *w, FILE *infile, FILE *outfile) {
     }
     n_written += 16;
     if (final) {
+      *n_r_p = n_read;
+      *n_w_p = n_written;
       return;
     }
   }
@@ -50,8 +55,9 @@ void do_encrypt(AES_word *w, FILE *infile, FILE *outfile) {
 
 /* decrypt, remove padding */
 
-void do_decrypt(AES_word *w, FILE *infile, FILE *outfile) {
-  int i, n, n_read, n_written, final, pad;
+void do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n_w_p) {
+  int i, n, final, pad;
+  off_t n_read, n_written;
   off_t fpos;
   AES_byte in[16], out[16];
 
@@ -63,6 +69,8 @@ void do_decrypt(AES_word *w, FILE *infile, FILE *outfile) {
     if (n == 0) {
       if (n_read == 0) {
 	/* special case: empty input */
+	*n_r_p = 0;
+	*n_w_p = 0;
 	return;
       }
       /* the previous block was the last one,
@@ -80,11 +88,14 @@ void do_decrypt(AES_word *w, FILE *infile, FILE *outfile) {
       }
       if (debug) printf ("padding: fpos before = %ld\n", fpos);
       fpos -= pad;
+      n_written -= pad;
       if (debug) printf ("padding: fpos after = %ld\n", fpos);
       if (ftruncate(fileno(outfile), fpos) == -1) {
 	perror("ftruncate");
 	exit (10);
       }
+      *n_r_p = n_read;
+      *n_w_p = n_written;
       return;
     }
     if (n != 16) {
@@ -98,7 +109,7 @@ void do_decrypt(AES_word *w, FILE *infile, FILE *outfile) {
       perror("Error: fwrite");
       exit (12);
     }
-    n_written += n;
+    n_written += 16;
   }
 }  
 
@@ -110,6 +121,8 @@ int main(int argc, char** argv) {
   AES_byte key[16];
   AES_word w[44];
   char tmp[3];
+  off_t n_read, n_written;
+  struct rusage usage;
 
   if (argc != 5) {
     fprintf (stderr, "%s", usage);
@@ -160,13 +173,22 @@ int main(int argc, char** argv) {
 
   AES_KeyExpansion(key, w);
   if (encrypt) {
-    do_encrypt(w, infile, outfile);
+    do_encrypt(w, infile, outfile, &n_read, &n_written);
   } else {
-    do_decrypt(w, infile, outfile);
+    do_decrypt(w, infile, outfile, &n_read, &n_written);
   }
 
   fclose(infile);
   fclose(outfile);
+
+  printf("file i/o: %ld bytes read, %ld bytes written\n", n_read, n_written);
+
+  getrusage(RUSAGE_SELF, &usage);
+  printf("times: user %d.%06d, system %d.%06d\n",
+	 usage.ru_utime.tv_sec, usage.ru_utime.tv_usec, 
+	 usage.ru_stime.tv_sec, usage.ru_stime.tv_usec);
+
+  exit(0);
   
 }
 

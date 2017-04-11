@@ -15,7 +15,11 @@
 
 char *usage = "Usage: rypto <mode> <key> <infile> <outfile>\n  <mode> = e|d\n  <key> = 32 hex digits\n";
 
+/* make this 1 to have (boring) debug output*/
 int debug = 0;
+
+/* make this 1 to count and print resource usage */
+int stats = 0;
 
 /* encrypt and PKCS#7 pad. */
 
@@ -122,7 +126,7 @@ int main(int argc, char** argv) {
   AES_word w[44];
   char tmp[3];
   off_t n_read, n_written;
-  struct rusage usage;
+  struct rusage r_usage;
 
   if (argc != 5) {
     fprintf (stderr, "%s", usage);
@@ -181,12 +185,14 @@ int main(int argc, char** argv) {
   fclose(infile);
   fclose(outfile);
 
-  printf("file i/o: %ld bytes read, %ld bytes written\n", n_read, n_written);
+  if (stats) {
+    printf("file i/o: %ld bytes read, %ld bytes written\n", n_read, n_written);
 
-  getrusage(RUSAGE_SELF, &usage);
-  printf("times: user %d.%06d, system %d.%06d\n",
-	 usage.ru_utime.tv_sec, usage.ru_utime.tv_usec, 
-	 usage.ru_stime.tv_sec, usage.ru_stime.tv_usec);
+    getrusage(RUSAGE_SELF, &r_usage);
+    printf("times: user %d.%06d, system %d.%06d\n",
+      r_usage.ru_utime.tv_sec, r_usage.ru_utime.tv_usec, 
+      r_usage.ru_stime.tv_sec, r_usage.ru_stime.tv_usec);
+  }
 
   exit(0);
   

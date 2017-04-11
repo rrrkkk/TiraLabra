@@ -32,7 +32,7 @@ model {
                 }
 	    }
             sources {
-               c.lib library: "aes"
+               c.lib library: "aes", linkage: 'static'
             }
         }
     }

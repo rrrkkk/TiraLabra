@@ -1,0 +1,1 @@
+-nosalt -aes-128-ecb -K `cat key`

@@ -8,17 +8,47 @@ Katselmoija: Riku Kalinen
 
 1. Tehdyt toimenpiteet
 
-Kloonattu repo 10.4.2017 klo 10:03.
+Kloonattu repo 20.4.2017 klo 11:22.
 
 Luettu määrittelydokumentti ja viikkoraportit.
 
+Katsottu Makefile.
+
+Katsottu main.c, ipTable.h, tableCreator.h, ipTableRoutingCell.h,
+randomAddressGenerator.h.
 
 2. Huomiot
 
 2.1 Hyvää
 
+Koodi on sisennetty.
+
+.h - tiedostot on suojattu kaksinkertaiselta lataamiselta.
+
 2.2 Kehitettävää
+
+Dokumentointia tarvitaan.
+
+Funktion createTable koodi on sijoitettu hämäävästi tiedostoon tableCreator.h.
+Samoin funktiot randomAddressGenerator ja setAddress tiedostoon
+randomAccessGenerator.h.
+Lienee tilapäinen järjesely.
+Yleensä tuotantokoodi sijoitetaan .c - tiedostoihin.
+
+ipTable.h (ipAddress):
+IP(v4)-osoitteen ja maskin vakioesitystapa on 1.2.3.4/24, siis koko osoite / maski.
+Kannattanee harkita tässä pysymistä.
+
+Repossa näyttää olevan binäärit mukana. Kannattanee ottaa ne pois, tai sijoitella ne esim.
+arkkitehtuurikohtaisiin hakemistoihin.
 
 Yksikkötesteihin suosittelen CUnit:ia:
 http://cunit.sourceforge.net/
 
+2.3 Mainintoja
+
+Ohjelmassa on tuotantokoodista olemassa ainoastaan määritykset (*.h) joten itse koodista
+ei vielä pysty lausumaan.
+
+Testitapauksia on kirjoitettu mutta ilman tuotantokoodia ja dokumentointia niihin ei pääse
+kiinni.

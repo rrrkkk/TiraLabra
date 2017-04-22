@@ -39,16 +39,10 @@ ipTable.h (ipAddress):
 IP(v4)-osoitteen ja maskin vakioesitystapa on 1.2.3.4/24, siis koko osoite / maski.
 Kannattanee harkita tässä pysymistä.
 
-Repossa näyttää olevan binäärit mukana. Kannattanee ottaa ne pois, tai sijoitella ne esim.
-arkkitehtuurikohtaisiin hakemistoihin.
-
 Yksikkötesteihin suosittelen CUnit:ia:
 http://cunit.sourceforge.net/
 
 2.3 Mainintoja
-
-Ohjelmassa on tuotantokoodista olemassa ainoastaan määritykset (*.h) joten itse koodista
-ei vielä pysty lausumaan.
 
 Testitapauksia on kirjoitettu mutta ilman tuotantokoodia ja dokumentointia niihin ei pääse
 kiinni.

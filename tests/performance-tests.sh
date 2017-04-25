@@ -16,7 +16,7 @@ for i in $sizes; do
     plain="in.$i"
     out="cipher.$i"
     echo " encrypt $i:"
-    time $rypto e `cat key` $plain $out
+    time -p $rypto e `cat key` $plain $out
     echo
     echo
 done
@@ -25,7 +25,7 @@ for i in $sizes; do
     cipher="cipher.$i"
     out="out.$i"
     echo " decrypt $i:"
-    time $rypto d `cat key` $cipher $out
+    time -p $rypto d `cat key` $cipher $out
     echo
     echo
 done

@@ -25,18 +25,27 @@ mkdir build
 cd src
 g++ -I ../include -o ../build/tiracomp *.cpp
 
+Ajettu
+tiracomp -?
+tiracomp -h
+
 2. Huomiot
 
 2.1 Hyvää
 
 Dokumentit ovat ymmärrettäviä ja selkeitä.
 
+Koodi on sisennettyä.
+
 2.2 Kehitettävää
 
-Ei käänny ympäristössäni (Mac OS Sierra, Homebrew) annetuilla komennoilla.
-- cmake keskeytyy virheilmoitukseen:
+Ei kääntynyt ympäristössäni (Mac OS Sierra, Homebrew) annetuilla komennoilla.
+- cmake keskeytyi virheilmoitukseen:
   Could NOT find GTest (missing: GTEST_LIBRARY GTEST_INCLUDE_DIR
 - make ei löydä makefile:ä
+
+Jos ohjelman käynnistää tuntemattomalla optiolla, se voisi heti
+tulostaa aputekstin (nyt: "Unknown option -?").
 
 2.3 Mainintoja
 

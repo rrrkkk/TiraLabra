@@ -95,8 +95,9 @@ off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *
       fpos -= pad;
       n_written -= pad;
       if (debug) printf ("padding: fpos after = %ld\n", fpos);
-      /* this bugs on melkki. return correct offset and truncate
-	 outside in the main. 
+      /* ftruncate below failed on melkki. so:
+	 return correct offset and truncate(2) in the main,
+	 after the file has been closed. 
       if (ftruncate(fileno(outfile), fpos) == -1) {
 	perror("ftruncate");
 	exit (10);
@@ -188,7 +189,10 @@ int main(int argc, char** argv) {
     fpos = do_decrypt(w, infile, outfile, &n_read, &n_written);
     fclose(infile);
     fclose(outfile);
-    truncate(argv[4], fpos); /* a bootleg fix */ 
+    if (truncate(argv[4], fpos) != 0) { /* a bootleg fix */
+      perror("truncate");
+      /* in this case, let's just fall thru */
+    }
   }
 
   if (stats) {

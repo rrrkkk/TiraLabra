@@ -21,16 +21,28 @@ int debug = 0;
 /* make this 1 to count and print resource usage */
 int stats = 0;
 
+/* helper for the following, encrypt 1 block, write it to file. */
+
+void encrypt_and_write (AES_byte *in, AES_word *w, FILE *outfile)
+{
+  AES_byte out[16];
+  
+  AES_encrypt(in, out, w);
+  if (fwrite(out, 1, 16, outfile) != 16) {
+    perror("Error: fwrite");
+    exit (6);
+  }
+}
+
 /* encrypt and PKCS#7 pad. */
 
 void do_encrypt(AES_word *w, FILE *infile, FILE *outfile,
 		off_t *n_read_ptr, off_t *n_written_ptr)
 {
-  int i, n, final, pad;
+  int i, n, pad;
   off_t n_read, n_written;
-  AES_byte in[16], out[16];
+  AES_byte in[16];
 
-  final = 0;
   n_read = 0;
   n_written = 0;
   while (1) {
@@ -40,25 +52,19 @@ void do_encrypt(AES_word *w, FILE *infile, FILE *outfile,
       /* final block */
       break;
     }
-    AES_encrypt(in, out, w);
-    if (fwrite(out, 1, 16, outfile) != 16) {
-      perror("Error: fwrite");
-      exit (6);
-    }
+    encrypt_and_write(in, w, outfile);
     n_written += 16;
   } /* while */
       
-  /* final block - may be 0-15 bytes - pad it (PKCS#7) before encryption */
+  /* final block
+     may be 0-15 bytes
+     pad it (PKCS#7) before encryption */
   pad = 16 - n;
   for (i = 15; i >= n; i --) {
     in[i] = pad;
     if (debug) printf ("padding: in[%d] = %02x\n", i, in[i]);
   }
-  AES_encrypt(in, out, w);
-  if (fwrite(out, 1, 16, outfile) != 16) {
-    perror("Error: fwrite");
-    exit (6);
-  }
+  encrypt_and_write(in, w, outfile);
   n_written += 16;
 
   /* report work done and go back */

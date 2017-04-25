@@ -23,7 +23,9 @@ int stats = 0;
 
 /* encrypt and PKCS#7 pad. */
 
-void do_encrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n_w_p) {
+void do_encrypt(AES_word *w, FILE *infile, FILE *outfile,
+		off_t *n_read_ptr, off_t *n_written_ptr)
+{
   int i, n, final, pad;
   off_t n_read, n_written;
   AES_byte in[16], out[16];
@@ -50,8 +52,8 @@ void do_encrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n
     }
     n_written += 16;
     if (final) {
-      *n_r_p = n_read;
-      *n_w_p = n_written;
+      *n_read_ptr = n_read;
+      *n_written_ptr = n_written;
       return;
     }
   }
@@ -60,7 +62,9 @@ void do_encrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n
 /* decrypt, remove padding.
    return the length of final file. */
 
-off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n_w_p) {
+off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile,
+		 off_t *n_read_ptr, off_t *n_written_ptr)
+{
   int i, n, final, pad;
   off_t n_read, n_written;
   off_t fpos;
@@ -74,8 +78,8 @@ off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *
     if (n == 0) {
       if (n_read == 0) {
 	/* special case: empty input */
-	*n_r_p = 0;
-	*n_w_p = 0;
+	*n_read_ptr = 0;
+	*n_written_ptr = 0;
 	return 0;
       }
       /* the previous block was the last one,
@@ -103,8 +107,8 @@ off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *
 	 exit (10);
 	 }
       */
-      *n_r_p = n_read;
-      *n_w_p = n_written;
+      *n_read_ptr = n_read;
+      *n_written_ptr = n_written;
       return fpos;
     }
     if (n != 16) {

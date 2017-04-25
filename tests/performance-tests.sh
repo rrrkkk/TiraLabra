@@ -5,13 +5,14 @@
 echo "rypto performance tests running"
 
 rypto="../build/exe/rypto/passing/rypto"
+sizes="10000000 20000000 30000000"
 
-for i in 100000 1000000 10000000; do
+for i in $sizes; do
     echo " creating $i:"
     dd if=/dev/zero of=in.$i bs=$i count=1
 done
 
-for i in 100000 1000000 10000000; do
+for i in $sizes; do
     plain="in.$i"
     out="cipher.$i"
     echo " encrypt $i:"
@@ -20,7 +21,7 @@ for i in 100000 1000000 10000000; do
     echo
 done
 
-for i in 100000 1000000 10000000; do
+for i in $sizes; do
     cipher="cipher.$i"
     out="out.$i"
     echo " decrypt $i:"
@@ -30,7 +31,7 @@ for i in 100000 1000000 10000000; do
 done
 
 # clean tmp files
-rm -f in.100000* out.100000* cipher.100000*
+rm -f in.* out.* cipher.*
 
 echo "performance tests done"
 

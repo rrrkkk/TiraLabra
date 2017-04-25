@@ -115,7 +115,7 @@ off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile,
   }
   
   /* the previous block was the last one. 
-     istruct parent to truncate the outfile so that padding is discarded */
+     instruct parent to truncate the outfile so that padding is discarded */
   pad = out[15];
   if (pad > 16 || pad < 1) {
     fprintf(stderr, "Error: 1 > Pad (%d) > 16\n", pad);

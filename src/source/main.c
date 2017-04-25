@@ -57,9 +57,10 @@ void do_encrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n
   }
 }
 
-/* decrypt, remove padding */
+/* decrypt, remove padding.
+   return the length of final file. */
 
-void do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n_w_p) {
+off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n_w_p) {
   int i, n, final, pad;
   off_t n_read, n_written;
   off_t fpos;
@@ -75,7 +76,7 @@ void do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n
 	/* special case: empty input */
 	*n_r_p = 0;
 	*n_w_p = 0;
-	return;
+	return 0;
       }
       /* the previous block was the last one,
 	 just truncate the outfile so that padding is discarded */
@@ -94,13 +95,16 @@ void do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *n
       fpos -= pad;
       n_written -= pad;
       if (debug) printf ("padding: fpos after = %ld\n", fpos);
+      /* this bugs on melkki. return correct offset and truncate
+	 outside in the main. 
       if (ftruncate(fileno(outfile), fpos) == -1) {
 	perror("ftruncate");
 	exit (10);
       }
+      */
       *n_r_p = n_read;
       *n_w_p = n_written;
-      return;
+      return fpos;
     }
     if (n != 16) {
       fprintf(stderr, "Error: fread returned != 16 (%d)\n", n);
@@ -125,7 +129,7 @@ int main(int argc, char** argv) {
   AES_byte key[16];
   AES_word w[44];
   char tmp[3];
-  off_t n_read, n_written;
+  off_t n_read, n_written, fpos;
   struct rusage r_usage;
 
   if (argc != 5) {
@@ -178,12 +182,14 @@ int main(int argc, char** argv) {
   AES_KeyExpansion(key, w);
   if (encrypt) {
     do_encrypt(w, infile, outfile, &n_read, &n_written);
+    fclose(infile);
+    fclose(outfile);
   } else {
-    do_decrypt(w, infile, outfile, &n_read, &n_written);
+    fpos = do_decrypt(w, infile, outfile, &n_read, &n_written);
+    fclose(infile);
+    fclose(outfile);
+    truncate(argv[4], fpos); /* a bootleg fix */ 
   }
-
-  fclose(infile);
-  fclose(outfile);
 
   if (stats) {
     printf("file i/o: %ld bytes read, %ld bytes written\n", n_read, n_written);

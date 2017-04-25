@@ -97,34 +97,8 @@ off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile,
 	*n_written_ptr = 0;
 	return 0;
       }
-      /* the previous block was the last one. 
-	 just truncate the outfile so that padding is discarded */
-      pad = out[15];
-      if (pad > 16 || pad < 1) {
-	fprintf(stderr, "Error: 1 > Pad (%d) > 16\n", pad);
-	exit (8);
-      }
-      if (debug) printf ("padding: pad = %d\n", pad);
-      fpos = ftello(outfile);
-      if (fpos == -1) {
-	perror("ftello");
-	exit (9);
-      }
-      if (debug) printf ("padding: fpos before = %ld\n", fpos);
-      fpos -= pad;
-      n_written -= pad;
-      if (debug) printf ("padding: fpos after = %ld\n", fpos);
-      /* ftruncate below failed on melkki. so:
-	 return correct offset and truncate(2) in the main,
-	 after the file has been closed. 
-	 if (ftruncate(fileno(outfile), fpos) == -1) {
-	 perror("ftruncate");
-	 exit (10);
-	 }
-      */
-      *n_read_ptr = n_read;
-      *n_written_ptr = n_written;
-      return fpos;
+      /* the previous block was the last */
+      break;
     }
     if (n != 16) {
       fprintf(stderr, "Error: fread returned != 16 (%d)\n", n);
@@ -139,7 +113,37 @@ off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile,
     }
     n_written += 16;
   }
-}  
+  
+  /* the previous block was the last one. 
+     istruct parent to truncate the outfile so that padding is discarded */
+  pad = out[15];
+  if (pad > 16 || pad < 1) {
+    fprintf(stderr, "Error: 1 > Pad (%d) > 16\n", pad);
+    exit (8);
+  }
+  if (debug) printf ("padding: pad = %d\n", pad);
+  fpos = ftello(outfile);
+  if (fpos == -1) {
+    perror("ftello");
+    exit (9);
+  }
+  if (debug) printf ("padding: fpos before = %ld\n", fpos);
+  fpos -= pad;
+  n_written -= pad;
+  if (debug) printf ("padding: fpos after = %ld\n", fpos);
+  /* ftruncate(2) below failed on melkki. so:
+   * return correct offset and truncate(2) in the main,
+   * after the file has been closed. 
+   * if (ftruncate(fileno(outfile), fpos) == -1) {
+   *   perror("ftruncate");
+   *   exit (10);
+   * }
+   */
+  *n_read_ptr = n_read;
+  *n_written_ptr = n_written;
+  return fpos;
+
+}
 
 int main(int argc, char** argv) {
   int encrypt;

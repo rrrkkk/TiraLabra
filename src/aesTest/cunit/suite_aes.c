@@ -3,11 +3,11 @@
 #include "aes.h"
 
 int suite_init(void) {
-    return 0;
+  return 0;
 }
 
 int suite_clean(void) {
-    return 0;
+  return 0;
 }
 
 /* dummy tests to just check the toolchain is working. */
@@ -58,7 +58,7 @@ void test_KeyExpansion_00(void) {
   for (i = 0; i < N_W; i ++)
     if (actual_w[i] != expected_w[i]) {
       printf("test_KeyExpansion_00 failed, i=%d, actual=%x, expected=%x\n",
-	       i, actual_w[i], expected_w[i]);
+	     i, actual_w[i], expected_w[i]);
       CU_FAIL("test_KeyExpansion_00 failed");
       passed = 0;
     }
@@ -91,7 +91,7 @@ void test_KeyExpansion_ff(void) {
   for (i = 0; i < N_W; i ++)
     if (actual_w[i] != expected_w[i]) {
       printf("test_KeyExpansion_ff failed, i=%d, actual=%x, expected=%x\n",
-	       i, actual_w[i], expected_w[i]);
+	     i, actual_w[i], expected_w[i]);
       CU_FAIL("test_KeyExpansion_ff failed");
       passed = 0;
     }
@@ -124,7 +124,7 @@ void test_KeyExpansion_01(void) {
   for (i = 0; i < N_W; i ++)
     if (actual_w[i] != expected_w[i]) {
       printf("test_KeyExpansion_01 failed, i=%d, actual=%x, expected=%x\n",
-	       i, actual_w[i], expected_w[i]);
+	     i, actual_w[i], expected_w[i]);
       CU_FAIL("test_KeyExpansion_01 failed");
       passed = 0;
     }
@@ -460,21 +460,21 @@ void test_decrypt_69(void) {
 }
 
 void gradle_cunit_register() {
-    CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
-    CU_add_test(pSuiteRypto, "test_void", test_void);
-    CU_add_test(pSuiteRypto, "test_makeword", test_makeword);
-    CU_add_test(pSuiteRypto, "test_SubWord_09", test_SubWord_09);
-    CU_add_test(pSuiteRypto, "test_RotWord_3c", test_RotWord_3c);
-    CU_add_test(pSuiteRypto, "test_KeyExpansion_00", test_KeyExpansion_00);
-    CU_add_test(pSuiteRypto, "test_KeyExpansion_ff", test_KeyExpansion_ff);
-    CU_add_test(pSuiteRypto, "test_KeyExpansion_01", test_KeyExpansion_01);
-    CU_add_test(pSuiteRypto, "test_AddRoundKey_32", test_AddRoundKey_32);
-    CU_add_test(pSuiteRypto, "test_SubBytes_19", test_SubBytes_19);
-    CU_add_test(pSuiteRypto, "test_InvSubBytes_d4", test_InvSubBytes_d4);
-    CU_add_test(pSuiteRypto, "test_ShiftRows_d4", test_ShiftRows_d4);
-    CU_add_test(pSuiteRypto, "test_InvShiftRows_d4", test_InvShiftRows_d4);
-    CU_add_test(pSuiteRypto, "test_MixColumns_d4", test_MixColumns_d4);
-    CU_add_test(pSuiteRypto, "test_InvMixColumns_04", test_InvMixColumns_04);
-    CU_add_test(pSuiteRypto, "test_encrypt_00", test_encrypt_00);
-    CU_add_test(pSuiteRypto, "test_decrypt_00", test_decrypt_69);
+  CU_pSuite pSuiteRypto = CU_add_suite("rypto tests", suite_init, suite_clean);
+  CU_add_test(pSuiteRypto, "test_void", test_void);
+  CU_add_test(pSuiteRypto, "test_makeword", test_makeword);
+  CU_add_test(pSuiteRypto, "test_SubWord_09", test_SubWord_09);
+  CU_add_test(pSuiteRypto, "test_RotWord_3c", test_RotWord_3c);
+  CU_add_test(pSuiteRypto, "test_KeyExpansion_00", test_KeyExpansion_00);
+  CU_add_test(pSuiteRypto, "test_KeyExpansion_ff", test_KeyExpansion_ff);
+  CU_add_test(pSuiteRypto, "test_KeyExpansion_01", test_KeyExpansion_01);
+  CU_add_test(pSuiteRypto, "test_AddRoundKey_32", test_AddRoundKey_32);
+  CU_add_test(pSuiteRypto, "test_SubBytes_19", test_SubBytes_19);
+  CU_add_test(pSuiteRypto, "test_InvSubBytes_d4", test_InvSubBytes_d4);
+  CU_add_test(pSuiteRypto, "test_ShiftRows_d4", test_ShiftRows_d4);
+  CU_add_test(pSuiteRypto, "test_InvShiftRows_d4", test_InvShiftRows_d4);
+  CU_add_test(pSuiteRypto, "test_MixColumns_d4", test_MixColumns_d4);
+  CU_add_test(pSuiteRypto, "test_InvMixColumns_04", test_InvMixColumns_04);
+  CU_add_test(pSuiteRypto, "test_encrypt_00", test_encrypt_00);
+  CU_add_test(pSuiteRypto, "test_decrypt_00", test_decrypt_69);
 }

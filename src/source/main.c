@@ -98,10 +98,10 @@ off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile, off_t *n_r_p, off_t *
       /* ftruncate below failed on melkki. so:
 	 return correct offset and truncate(2) in the main,
 	 after the file has been closed. 
-      if (ftruncate(fileno(outfile), fpos) == -1) {
-	perror("ftruncate");
-	exit (10);
-      }
+	 if (ftruncate(fileno(outfile), fpos) == -1) {
+	 perror("ftruncate");
+	 exit (10);
+	 }
       */
       *n_r_p = n_read;
       *n_w_p = n_written;
@@ -200,8 +200,8 @@ int main(int argc, char** argv) {
 
     getrusage(RUSAGE_SELF, &r_usage);
     printf("times: user %d.%06d, system %d.%06d\n",
-      r_usage.ru_utime.tv_sec, r_usage.ru_utime.tv_usec, 
-      r_usage.ru_stime.tv_sec, r_usage.ru_stime.tv_usec);
+	   r_usage.ru_utime.tv_sec, r_usage.ru_utime.tv_usec, 
+	   r_usage.ru_stime.tv_sec, r_usage.ru_stime.tv_usec);
   }
 
   exit(0);

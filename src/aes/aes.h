@@ -27,4 +27,5 @@ void AES_AddRoundKey(AES_byte state[AES_Nb][4], AES_word *key);
 void AES_SubBytes(AES_byte state[AES_Nb][4]);
 void AES_ShiftRows(AES_byte state[AES_Nb][4]);
 void AES_MixColumns(AES_byte state[AES_Nb][4]);
-void AES_encrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *key);
+void AES_encrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *w);
+void AES_decrypt(AES_byte *plaintext, AES_byte *ciphertext, AES_word *w);

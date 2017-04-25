@@ -47,7 +47,7 @@ static const AES_byte AES_inverse_S_Box[256] = {
 
 /* help var for KeySchedule. from standard pp. 27-
    this is for 128 bit keys. one extra element in the beginning to avoid black magic on indexing.
- */
+*/
 
 static const AES_word AES_Rcon[11] = {
   0,
@@ -235,7 +235,7 @@ void AES_AddRoundKey(AES_byte state[AES_Nb][4], AES_word *w) {
     b[2] = (w[i] >> 8) & 0xff;
     b[3] = w[i] & 0xff;
     /* printf("AddRoundKey: i=%d, b[0]=%x, b[1]=%x, b[2]=%x, b[3]=%x\n",
-	   i, b[0], b[1], b[2], b[3]); */
+       i, b[0], b[1], b[2], b[3]); */
     for (j = 0; j < 4; j ++) {
       /* printf("AddRoundKey: j=%d, state before=%x", j, state[i][j]); */
       state[i][j] ^= b[j];
@@ -247,22 +247,22 @@ void AES_AddRoundKey(AES_byte state[AES_Nb][4], AES_word *w) {
 /* SubBytes transformation. Standard pp. 15 */
 
 void AES_SubBytes(AES_byte state[AES_Nb][4]) {
- int i, j;
+  int i, j;
   for (i = 0; i < AES_Nb; i ++) {
-     for (j = 0; j < 4; j ++) {
-       state[j][i] = AES_S_Box[state[j][i]];
-     }
+    for (j = 0; j < 4; j ++) {
+      state[j][i] = AES_S_Box[state[j][i]];
+    }
   }
 }
 
 /* InvSubBytes transformation. Standard pp. 22 */
 
 void AES_InvSubBytes(AES_byte state[AES_Nb][4]) {
- int i, j;
+  int i, j;
   for (i = 0; i < AES_Nb; i ++) {
-     for (j = 0; j < 4; j ++) {
-       state[j][i] = AES_inverse_S_Box[state[j][i]];
-     }
+    for (j = 0; j < 4; j ++) {
+      state[j][i] = AES_inverse_S_Box[state[j][i]];
+    }
   }
 }
 
@@ -418,89 +418,89 @@ void AES_MixColumns(AES_byte state[AES_Nb][4]) {
 void AES_InvMixColumns(AES_byte state[AES_Nb][4]) {
   AES_byte b0, b1, b2, b3;
 
-   b0 = state[0][0];
-   b1 = state[0][1];
-   b2 = state[0][2];
-   b3 = state[0][3];
-   state[0][0] = AES_g_m[5][b0];
-   state[0][0] ^= AES_g_m[3][b1];
-   state[0][0] ^= AES_g_m[4][b2];
-   state[0][0] ^= AES_g_m[2][b3];
-   state[0][1] = AES_g_m[2][b0];
-   state[0][1] ^= AES_g_m[5][b1];
-   state[0][1] ^= AES_g_m[3][b2];
-   state[0][1] ^= AES_g_m[4][b3];
-   state[0][2] = AES_g_m[4][b0];
-   state[0][2] ^= AES_g_m[2][b1];
-   state[0][2] ^= AES_g_m[5][b2];
-   state[0][2] ^= AES_g_m[3][b3];
-   state[0][3] = AES_g_m[3][b0];
-   state[0][3] ^= AES_g_m[4][b1];
-   state[0][3] ^= AES_g_m[2][b2];
-   state[0][3] ^= AES_g_m[5][b3];
+  b0 = state[0][0];
+  b1 = state[0][1];
+  b2 = state[0][2];
+  b3 = state[0][3];
+  state[0][0] = AES_g_m[5][b0];
+  state[0][0] ^= AES_g_m[3][b1];
+  state[0][0] ^= AES_g_m[4][b2];
+  state[0][0] ^= AES_g_m[2][b3];
+  state[0][1] = AES_g_m[2][b0];
+  state[0][1] ^= AES_g_m[5][b1];
+  state[0][1] ^= AES_g_m[3][b2];
+  state[0][1] ^= AES_g_m[4][b3];
+  state[0][2] = AES_g_m[4][b0];
+  state[0][2] ^= AES_g_m[2][b1];
+  state[0][2] ^= AES_g_m[5][b2];
+  state[0][2] ^= AES_g_m[3][b3];
+  state[0][3] = AES_g_m[3][b0];
+  state[0][3] ^= AES_g_m[4][b1];
+  state[0][3] ^= AES_g_m[2][b2];
+  state[0][3] ^= AES_g_m[5][b3];
 
-   b0 = state[1][0];
-   b1 = state[1][1];
-   b2 = state[1][2];
-   b3 = state[1][3];
-   state[1][0] = AES_g_m[5][b0];
-   state[1][0] ^= AES_g_m[3][b1];
-   state[1][0] ^= AES_g_m[4][b2];
-   state[1][0] ^= AES_g_m[2][b3];
-   state[1][1] = AES_g_m[2][b0];
-   state[1][1] ^= AES_g_m[5][b1];
-   state[1][1] ^= AES_g_m[3][b2];
-   state[1][1] ^= AES_g_m[4][b3];
-   state[1][2] = AES_g_m[4][b0];
-   state[1][2] ^= AES_g_m[2][b1];
-   state[1][2] ^= AES_g_m[5][b2];
-   state[1][2] ^= AES_g_m[3][b3];
-   state[1][3] = AES_g_m[3][b0];
-   state[1][3] ^= AES_g_m[4][b1];
-   state[1][3] ^= AES_g_m[2][b2];
-   state[1][3] ^= AES_g_m[5][b3];
+  b0 = state[1][0];
+  b1 = state[1][1];
+  b2 = state[1][2];
+  b3 = state[1][3];
+  state[1][0] = AES_g_m[5][b0];
+  state[1][0] ^= AES_g_m[3][b1];
+  state[1][0] ^= AES_g_m[4][b2];
+  state[1][0] ^= AES_g_m[2][b3];
+  state[1][1] = AES_g_m[2][b0];
+  state[1][1] ^= AES_g_m[5][b1];
+  state[1][1] ^= AES_g_m[3][b2];
+  state[1][1] ^= AES_g_m[4][b3];
+  state[1][2] = AES_g_m[4][b0];
+  state[1][2] ^= AES_g_m[2][b1];
+  state[1][2] ^= AES_g_m[5][b2];
+  state[1][2] ^= AES_g_m[3][b3];
+  state[1][3] = AES_g_m[3][b0];
+  state[1][3] ^= AES_g_m[4][b1];
+  state[1][3] ^= AES_g_m[2][b2];
+  state[1][3] ^= AES_g_m[5][b3];
 
-   b0 = state[2][0];
-   b1 = state[2][1];
-   b2 = state[2][2];
-   b3 = state[2][3];
-   state[2][0] = AES_g_m[5][b0];
-   state[2][0] ^= AES_g_m[3][b1];
-   state[2][0] ^= AES_g_m[4][b2];
-   state[2][0] ^= AES_g_m[2][b3];
-   state[2][1] = AES_g_m[2][b0];
-   state[2][1] ^= AES_g_m[5][b1];
-   state[2][1] ^= AES_g_m[3][b2];
-   state[2][1] ^= AES_g_m[4][b3];
-   state[2][2] = AES_g_m[4][b0];
-   state[2][2] ^= AES_g_m[2][b1];
-   state[2][2] ^= AES_g_m[5][b2];
-   state[2][2] ^= AES_g_m[3][b3];
-   state[2][3] = AES_g_m[3][b0];
-   state[2][3] ^= AES_g_m[4][b1];
-   state[2][3] ^= AES_g_m[2][b2];
-   state[2][3] ^= AES_g_m[5][b3];
+  b0 = state[2][0];
+  b1 = state[2][1];
+  b2 = state[2][2];
+  b3 = state[2][3];
+  state[2][0] = AES_g_m[5][b0];
+  state[2][0] ^= AES_g_m[3][b1];
+  state[2][0] ^= AES_g_m[4][b2];
+  state[2][0] ^= AES_g_m[2][b3];
+  state[2][1] = AES_g_m[2][b0];
+  state[2][1] ^= AES_g_m[5][b1];
+  state[2][1] ^= AES_g_m[3][b2];
+  state[2][1] ^= AES_g_m[4][b3];
+  state[2][2] = AES_g_m[4][b0];
+  state[2][2] ^= AES_g_m[2][b1];
+  state[2][2] ^= AES_g_m[5][b2];
+  state[2][2] ^= AES_g_m[3][b3];
+  state[2][3] = AES_g_m[3][b0];
+  state[2][3] ^= AES_g_m[4][b1];
+  state[2][3] ^= AES_g_m[2][b2];
+  state[2][3] ^= AES_g_m[5][b3];
 
-   b0 = state[3][0];
-   b1 = state[3][1];
-   b2 = state[3][2];
-   b3 = state[3][3];
-   state[3][0] = AES_g_m[5][b0];
-   state[3][0] ^= AES_g_m[3][b1];
-   state[3][0] ^= AES_g_m[4][b2];
-   state[3][0] ^= AES_g_m[2][b3];
-   state[3][1] = AES_g_m[2][b0];
-   state[3][1] ^= AES_g_m[5][b1];
-   state[3][1] ^= AES_g_m[3][b2];
-   state[3][1] ^= AES_g_m[4][b3];
-   state[3][2] = AES_g_m[4][b0];
-   state[3][2] ^= AES_g_m[2][b1];
-   state[3][2] ^= AES_g_m[5][b2];
-   state[3][2] ^= AES_g_m[3][b3];
-   state[3][3] = AES_g_m[3][b0];
-   state[3][3] ^= AES_g_m[4][b1];
-   state[3][3] ^= AES_g_m[2][b2];
-   state[3][3] ^= AES_g_m[5][b3];
+  b0 = state[3][0];
+  b1 = state[3][1];
+  b2 = state[3][2];
+  b3 = state[3][3];
+  state[3][0] = AES_g_m[5][b0];
+  state[3][0] ^= AES_g_m[3][b1];
+  state[3][0] ^= AES_g_m[4][b2];
+  state[3][0] ^= AES_g_m[2][b3];
+  state[3][1] = AES_g_m[2][b0];
+  state[3][1] ^= AES_g_m[5][b1];
+  state[3][1] ^= AES_g_m[3][b2];
+  state[3][1] ^= AES_g_m[4][b3];
+  state[3][2] = AES_g_m[4][b0];
+  state[3][2] ^= AES_g_m[2][b1];
+  state[3][2] ^= AES_g_m[5][b2];
+  state[3][2] ^= AES_g_m[3][b3];
+  state[3][3] = AES_g_m[3][b0];
+  state[3][3] ^= AES_g_m[4][b1];
+  state[3][3] ^= AES_g_m[2][b2];
+  state[3][3] ^= AES_g_m[5][b3];
   
 }
 

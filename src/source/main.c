@@ -145,37 +145,22 @@ off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile,
 
 }
 
-int main(int argc, char** argv) {
-  int encrypt;
+/* helper for below. check and parse key. */
+
+void parse_key(char *cmdline_key, AES_byte *key)
+{
   int i;
   int key_error = 0;
-  FILE *infile, *outfile;
-  AES_byte key[16];
-  AES_word w[44];
   char tmp[3];
-  off_t n_read, n_written, fpos;
-  struct rusage r_usage;
 
-  if (argc != 5) {
-    fprintf (stderr, "%s", usage);
-    exit (1);
-  }
-
-  if (strcmp (argv[1], "e") == 0) {
-    encrypt = 1;
-  } else if (strcmp (argv[1], "d") == 0) {
-    encrypt = 0;
-  } else {
-    fprintf (stderr, "Error: <mode> must be either e or d\n");
-    exit (2);
-  }
-
-  if (strlen (argv[2]) != 32) {
+  if (strlen (cmdline_key) != 32) {
     key_error = 1;
-  }
-  for (i = 0; i < 32; i ++) {
-    if (! isxdigit(argv[2][i])) {
-      key_error = 1;
+  } else {
+    for (i = 0; i < 32; i ++) {
+      if (! isxdigit(cmdline_key[i])) {
+	key_error = 1;
+	break;
+      }
     }
   }
   if (key_error) {
@@ -183,22 +168,54 @@ int main(int argc, char** argv) {
     exit (3);
   }
   for (i = 0; i < 16; i ++) {
-    strncpy(tmp, &argv[2][i * 2], 2);
+    strncpy(tmp, &cmdline_key[i * 2], 2);
     tmp[2] = 0;
     key[i] = (AES_byte) strtoul(tmp, NULL, 16);
     if (debug) printf("key[%d] = %02x\n", i, key[i]);
   }
 
-  infile = fopen(argv[3], "r");
+}
+
+int main(int argc, char** argv) {
+  int encrypt;
+  FILE *infile, *outfile;
+  AES_byte key[16];
+  AES_word w[44];
+  off_t n_read, n_written, fpos;
+  char *cmdline_mode, *cmdline_key, *cmdline_infile, *cmdline_outfile;
+  struct rusage r_usage;
+
+  if (argc != 5) {
+    fprintf (stderr, "%s", usage);
+    exit (1);
+  }
+
+  cmdline_mode = argv[1];
+  cmdline_key = argv[2];
+  cmdline_infile = argv[3];
+  cmdline_outfile = argv[4];
+
+  if (strcmp (cmdline_mode, "e") == 0) {
+    encrypt = 1;
+  } else if (strcmp (cmdline_mode, "d") == 0) {
+    encrypt = 0;
+  } else {
+    fprintf (stderr, "Error: <mode> must be either e or d\n");
+    exit (2);
+  }
+
+  parse_key(cmdline_key, key);
+  
+  infile = fopen(cmdline_infile, "r");
   if (infile == NULL) {
-    fprintf(stderr, "Error: Cannot open infile %s for reading: ", argv[3]);
+    fprintf(stderr, "Error: Cannot open infile %s for reading: ", cmdline_infile);
     perror(NULL);
     exit (4);
   }
   
-  outfile = fopen(argv[4], "w");
+  outfile = fopen(cmdline_outfile, "w");
   if (outfile == NULL) {
-    fprintf(stderr, "Error: Cannot open outfile %s for writing: ", argv[4]);
+    fprintf(stderr, "Error: Cannot open outfile %s for writing: ", cmdline_outfile);
     perror(NULL);
     exit (5);
   }
@@ -212,7 +229,7 @@ int main(int argc, char** argv) {
     fpos = do_decrypt(w, infile, outfile, &n_read, &n_written);
     fclose(infile);
     fclose(outfile);
-    if (truncate(argv[4], fpos) != 0) { /* a bootleg fix */
+    if (truncate(cmdline_outfile, fpos) != 0) { /* a bootleg fix */
       perror("truncate");
       /* in this case, let's just fall thru */
     }

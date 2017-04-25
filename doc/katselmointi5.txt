@@ -1,0 +1,42 @@
+
+TiraLabra koodikatselmointi
+
+Kohde: https://github.com/jclc/tiralabra-compression
+
+Katselmoija: Riku K (rrrkkk)
+
+
+1. Tehdyt toimenpiteet
+
+Kloonattu repo 25.4.2017 klo 09:18
+
+Luettu:
+- README.md
+- aihemaarittely.md
+- määrittelydokumentti.pdf
+- toteutusdokumentti.pdf
+- testausdokumentti.pdf
+- viikkoraportit 1-5
+
+Yritetty kääntää README.md ohjeilla.
+
+Käännetty komennoilla
+mkdir build
+cd src
+g++ -I ../include -o ../build/tiracomp *.cpp
+
+2. Huomiot
+
+2.1 Hyvää
+
+Dokumentit ovat ymmärrettäviä ja selkeitä.
+
+2.2 Kehitettävää
+
+Ei käänny ympäristössäni (Mac OS Sierra, Homebrew) annetuilla komennoilla.
+- cmake keskeytyy virheilmoitukseen:
+  Could NOT find GTest (missing: GTEST_LIBRARY GTEST_INCLUDE_DIR
+- make ei löydä makefile:ä
+
+2.3 Mainintoja
+

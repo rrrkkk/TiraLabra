@@ -37,13 +37,8 @@ void do_encrypt(AES_word *w, FILE *infile, FILE *outfile,
     n = fread (in, 1, 16, infile);
     n_read += n;
     if (n < 16) {
-      /* final block - pad it (PKCS#7) */
-      final = 1;
-      pad = 16 - n;
-      for (i = 15; i >= n; i --) {
-	in[i] = pad;
-	if (debug) printf ("padding: in[%d] = %02x\n", i, in[i]);
-      }
+      /* final block */
+      break;
     }
     AES_encrypt(in, out, w);
     if (fwrite(out, 1, 16, outfile) != 16) {
@@ -51,12 +46,26 @@ void do_encrypt(AES_word *w, FILE *infile, FILE *outfile,
       exit (6);
     }
     n_written += 16;
-    if (final) {
-      *n_read_ptr = n_read;
-      *n_written_ptr = n_written;
-      return;
-    }
+  } /* while */
+      
+  /* final block - may be 0-15 bytes - pad it (PKCS#7) before encryption */
+  pad = 16 - n;
+  for (i = 15; i >= n; i --) {
+    in[i] = pad;
+    if (debug) printf ("padding: in[%d] = %02x\n", i, in[i]);
   }
+  AES_encrypt(in, out, w);
+  if (fwrite(out, 1, 16, outfile) != 16) {
+    perror("Error: fwrite");
+    exit (6);
+  }
+  n_written += 16;
+
+  /* report work done and go back */
+  *n_read_ptr = n_read;
+  *n_written_ptr = n_written;
+  return;
+
 }
 
 /* decrypt, remove padding.
@@ -82,7 +91,7 @@ off_t do_decrypt(AES_word *w, FILE *infile, FILE *outfile,
 	*n_written_ptr = 0;
 	return 0;
       }
-      /* the previous block was the last one,
+      /* the previous block was the last one. 
 	 just truncate the outfile so that padding is discarded */
       pad = out[15];
       if (pad > 16 || pad < 1) {

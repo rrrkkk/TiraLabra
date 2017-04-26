@@ -18,6 +18,8 @@ Luettu:
 - testausdokumentti.pdf
 - viikkoraportit 1-5
 
+Katsottu https://en.wikipedia.org/wiki/Lempel-Ziv-Welch
+
 Yritetty kääntää README.md ohjeilla.
 
 Käännetty komennoilla
@@ -29,6 +31,9 @@ Ajettu
 tiracomp -?
 tiracomp -h
 
+Katsottu main.cpp
+
+
 2. Huomiot
 
 2.1 Hyvää
@@ -36,6 +41,8 @@ tiracomp -h
 Dokumentit ovat ymmärrettäviä ja selkeitä.
 
 Koodi on sisennettyä.
+
+Nimet ovat selkeitä ja ymmärrettäviä.
 
 2.2 Kehitettävää
 
@@ -47,5 +54,12 @@ Ei kääntynyt ympäristössäni (Mac OS Sierra, Homebrew) annetuilla komennoill
 Jos ohjelman käynnistää tuntemattomalla optiolla, se voisi heti
 tulostaa aputekstin (nyt: "Unknown option -?").
 
+main.cpp, rivit 41-97:
+Komentorivioptiot käydään läpi käsin. Voisi olla ymmärrettävämpää ja vähemmän
+virheherkkää käyttää esimerkiksi getopt(3) - kirjastofunktiota apuna.
+
 2.3 Mainintoja
 
+Google Test oli uusi tuttavuus ja oppimiskäyrä oli vähän liian jyrkkä
+kun se ei lähtenyt suoraan kukkumaan. Tämä on katselmoijan huonoutta
+eikä projektin vika :)

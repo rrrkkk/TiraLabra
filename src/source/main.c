@@ -205,6 +205,13 @@ int main(int argc, char** argv) {
   }
 
   parse_key(cmdline_key, key);
+
+  /* this does not take e.g. symlinks or hard links into account */
+  if (strcmp(cmdline_infile, cmdline_outfile) == 0) {
+    fprintf(stderr, "Error: infile %s and outfile %s cannot be the same\n",
+	    cmdline_infile, cmdline_outfile);
+    exit (4);
+  }
   
   infile = fopen(cmdline_infile, "r");
   if (infile == NULL) {

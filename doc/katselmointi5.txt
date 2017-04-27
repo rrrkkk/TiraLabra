@@ -9,6 +9,7 @@ Katselmoija: Riku K (rrrkkk)
 1. Tehdyt toimenpiteet
 
 Kloonattu repo 25.4.2017 klo 09:18
+- päivitetty 27.4.2017 klo 09:53
 
 Luettu:
 - README.md
@@ -31,7 +32,14 @@ Ajettu
 tiracomp -?
 tiracomp -h
 
-Katsottu main.cpp
+Katsottu main.cpp, encoder.cpp, *.hpp, decoder.cpp, input.cpp, output.cpp
+
+Kokeiltu suoritusta
+cd build
+cp tiracomp foo
+./tiracomp -v foo bar
+./tiracomp -v bar foo
+cmp foo tiracomp
 
 
 2. Huomiot
@@ -42,14 +50,14 @@ Dokumentit ovat ymmärrettäviä ja selkeitä.
 
 Koodi on sisennettyä.
 
-Nimet ovat selkeitä ja ymmärrettäviä.
+Nimet on hyvin valittu.
+
+Tiedostot on loogisesti nimetty.
+
+Osaa pakata ja purkaa pakkauksen, tuottaen lopulta alkuperäisen kanssa
+identtisen tiedoston; siis toimii :)
 
 2.2 Kehitettävää
-
-Ei kääntynyt ympäristössäni (Mac OS Sierra, Homebrew) annetuilla komennoilla.
-- cmake keskeytyi virheilmoitukseen:
-  Could NOT find GTest (missing: GTEST_LIBRARY GTEST_INCLUDE_DIR
-- make ei löydä makefile:ä
 
 Jos ohjelman käynnistää tuntemattomalla optiolla, se voisi heti
 tulostaa aputekstin (nyt: "Unknown option -?").
@@ -58,8 +66,18 @@ main.cpp, rivit 41-97:
 Komentorivioptiot käydään läpi käsin. Voisi olla ymmärrettävämpää ja vähemmän
 virheherkkää käyttää esimerkiksi getopt(3) - kirjastofunktiota apuna.
 
+Useat apuluokat (esim. StringTable) on implementoitu inline-metodeina .hpp -
+tiedostoissa. Vaihtoehtoinen käytäntö olisi kirjoittaa implementaatio
+erilliseen .cpp - tiedostoon ja tehdä näistä kirjasto.
+
+Ei kääntynyt ympäristössäni (Mac OS Sierra, Homebrew) annetuilla komennoilla.
+- cmake keskeytyi virheilmoitukseen:
+  Could NOT find GTest (missing: GTEST_LIBRARY GTEST_INCLUDE_DIR
+- make ei löydä makefile:ä
+
 2.3 Mainintoja
 
 Google Test oli uusi tuttavuus ja oppimiskäyrä oli vähän liian jyrkkä
 kun se ei lähtenyt suoraan kukkumaan. Tämä on katselmoijan huonoutta
 eikä projektin vika :)
+
